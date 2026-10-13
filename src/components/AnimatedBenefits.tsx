@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PremiumHeading } from './PremiumHeading';
 
 const benefits = [
@@ -74,19 +74,61 @@ const benefits = [
 ];
 
 export const AnimatedBenefits: React.FC = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
+  const sectionRef = useRef<HTMLElement>(null);
   const [activeDotIndex, setActiveDotIndex] = useState<number | null>(null);
   const dotsContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current) {
-      // Browsers often require muted for autoPlay to work, but we already have muted on the tag.
-      // Force play in case React doesn't autoPlay dynamically.
-      videoRef.current.play().catch(e => console.log("Video auto-play prevented:", e));
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Ensure DOM properties & attributes for reliable autoplay across browsers
+    video.setAttribute('muted', '');
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    const playVideo = () => {
+      if (video && video.paused) {
+        video.play().catch(() => {});
+      }
+    };
+
+    // Attempt initial play
+    playVideo();
+
+    // Trigger playback when Benefits section is visible in viewport
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            playVideo();
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: '100px' }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
     }
+
+    // User gesture fallback (browsers immediately permit muted playback on scroll/click)
+    const handleInteraction = () => {
+      playVideo();
+    };
+
+    window.addEventListener('scroll', handleInteraction, { passive: true, once: true });
+    window.addEventListener('click', handleInteraction, { once: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true, once: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -143,7 +185,7 @@ export const AnimatedBenefits: React.FC = () => {
   };
 
   return (
-    <section id="benefits" style={{
+    <section id="benefits" ref={sectionRef} style={{
       width: '100%',
       minHeight: '350px', // Prevents extreme height squashing
       padding: '60px 20px 20px', // Added top gap so it doesn't touch the section above
@@ -169,16 +211,19 @@ export const AnimatedBenefits: React.FC = () => {
       }}>
         <video
           ref={videoRef}
+          src="/hero-video-matched.mp4"
           autoPlay
           muted
           loop
           playsInline
+          preload="auto"
+          poster="/frame_1s.png"
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            transform: 'none',
-            opacity: 0.5, // Increased opacity so it's clearly visible
+            objectPosition: 'bottom',
+            opacity: 0.75,
             filter: 'grayscale(15%)'
           }}
         >
@@ -192,7 +237,7 @@ export const AnimatedBenefits: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'linear-gradient(180deg, rgba(10, 15, 28, 0.72) 0%, rgba(10, 15, 28, 0.45) 50%, rgba(10, 15, 28, 0.72) 100%)',
+          background: 'linear-gradient(180deg, rgba(10, 15, 28, 0.58) 0%, rgba(10, 15, 28, 0.22) 50%, rgba(10, 15, 28, 0.58) 100%)',
           pointerEvents: 'none'
         }} />
       </div>
