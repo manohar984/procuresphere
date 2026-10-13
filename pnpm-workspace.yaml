@@ -1,0 +1,2 @@
+allowBuilds:
+  '@vitejs/plugin-react': true

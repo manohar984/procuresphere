@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.vite/
+*.log
+*.zip
+.edge_test*
+fix*.js
+fix*.cjs
+fix*.py
+refactor.cjs
+remove_bg.cjs
+replace_cinematic.*
+restore_header.cjs
+search*.cjs
