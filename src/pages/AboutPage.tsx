@@ -59,10 +59,11 @@ export const AboutPage: React.FC = () => {
     >
       <div style={{ maxWidth: '1200px', margin: '20px auto 0' }}>
         {/* Mission Pillars with prominent borders and rich shadows */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '28px' }}>
+        <div className="about-pillars-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '28px' }}>
           {aboutPillars.map((p, i) => (
             <motion.div
               key={p.tag}
+              className="about-pillar-card"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
@@ -117,10 +118,11 @@ export const AboutPage: React.FC = () => {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '26px' }}>
+          <div className="about-capabilities-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '26px' }}>
             {capabilities.map((c, i) => (
               <motion.div
                 key={c.title}
+                className="about-capability-card"
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -163,6 +165,7 @@ export const AboutPage: React.FC = () => {
 
         {/* Core Principles Banner */}
         <div
+          className="about-banner"
           style={{
             marginTop: '80px',
             background: 'linear-gradient(135deg, #1e3a8a, #0f172a)',

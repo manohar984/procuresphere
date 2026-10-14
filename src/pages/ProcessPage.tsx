@@ -113,7 +113,7 @@ export const ProcessPage: React.FC = () => {
       <div style={{ maxWidth: '1160px', margin: '0 auto', paddingBottom: '50px' }}>
 
         {/* Process Flow Overview Ribbon Buttons */}
-        <div style={{
+        <div className="process-steps-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
           gap: '16px',
@@ -176,6 +176,7 @@ export const ProcessPage: React.FC = () => {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeStep.id}
+            className="process-active-card"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -189,7 +190,7 @@ export const ProcessPage: React.FC = () => {
               marginBottom: '54px'
             }}
           >
-            <div style={{
+            <div className="process-active-card-header" style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -251,7 +252,7 @@ export const ProcessPage: React.FC = () => {
               {activeStep.summary}
             </p>
 
-            <div style={{
+            <div className="process-activities-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
               gap: '28px',
@@ -273,7 +274,7 @@ export const ProcessPage: React.FC = () => {
                 </ul>
               </div>
 
-              <div style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: '28px' }}>
+              <div className="process-deliverable-box" style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: '28px' }}>
                 <h4 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', marginBottom: '16px' }}>
                   Stage Output & Deliverable:
                 </h4>
@@ -312,7 +313,7 @@ export const ProcessPage: React.FC = () => {
           }}>
             Operational Principles Across the Lifecycle
           </h3>
-          <div style={{
+          <div className="process-principles-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
             gap: '24px'

@@ -176,6 +176,7 @@ export const SolutionsPage: React.FC = () => {
 
       {/* Step Selector Horizontal Bar */}
       <div
+        className="solutions-step-selector"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
@@ -227,6 +228,7 @@ export const SolutionsPage: React.FC = () => {
       <AnimatePresence mode="wait">
         <motion.div
           key={selected.id}
+          className="solutions-detail-card"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
@@ -331,6 +333,7 @@ export const SolutionsPage: React.FC = () => {
 
           {/* Right Column: Metric Callout */}
           <div
+            className="solutions-metric-card"
             style={{
               background: '#f8fafc',
               border: '2px solid #cbd5e1',

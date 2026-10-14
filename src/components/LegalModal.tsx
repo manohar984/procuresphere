@@ -41,6 +41,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
   return (
     <AnimatePresence>
       <div
+        className="legal-modal-overlay"
         style={{
           position: 'fixed',
           inset: 0,
@@ -58,6 +59,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
         }}
       >
         <motion.div
+          className="legal-modal-dialog"
           initial={{ opacity: 0, y: 20, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.98 }}
@@ -78,6 +80,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
         >
           {/* Header */}
           <div
+            className="legal-modal-header"
             style={{
               padding: '24px 32px 18px',
               borderBottom: '1px solid var(--line, #e1e7f0)',
@@ -189,6 +192,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
 
           {/* Scrollable Document Content */}
           <div
+            className="legal-modal-body"
             style={{
               padding: '28px 32px 36px',
               overflowY: 'auto',

@@ -66,6 +66,28 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
   const [selectedModule, setSelectedModule] = useState<typeof modules[0] | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+  const [mobileIndex, setMobileIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(1);
+  const isDraggingRef = React.useRef(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleNext = () => {
+    setSlideDirection(1);
+    setMobileIndex((prev) => (prev + 1) % modules.length);
+  };
+
+  const handlePrev = () => {
+    setSlideDirection(-1);
+    setMobileIndex((prev) => (prev - 1 + modules.length) % modules.length);
+  };
 
   useEffect(() => {
     if (selectedModule) return;
@@ -94,21 +116,22 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
     const centerOffset = index - 2.5;
 
     if (state === 'fanned') {
-      const x = centerOffset * 160;
-      const y = Math.abs(centerOffset) * 20;
-      const rotateZ = centerOffset * 8;
-      return { x, y, rotateZ, scale: 1 };
+      const spacing = isMobile ? 36 : 160;
+      const x = centerOffset * spacing;
+      const y = Math.abs(centerOffset) * (isMobile ? 8 : 20);
+      const rotateZ = centerOffset * (isMobile ? 5 : 8);
+      return { x, y, rotateZ, scale: isMobile ? 0.92 : 1 };
     }
 
     if (state === 'messy') {
-      const jitterRotates = [-14, 8, -6, 12, -10, 16];
-      const jitterX = [-40, 25, -15, 30, -20, 35];
-      const jitterY = [10, -15, 5, -8, 12, -4];
+      const jitterRotates = isMobile ? [-8, 6, -4, 8, -6, 10] : [-14, 8, -6, 12, -10, 16];
+      const jitterX = isMobile ? [-18, 14, -8, 16, -12, 18] : [-40, 25, -15, 30, -20, 35];
+      const jitterY = isMobile ? [6, -8, 3, -4, 6, -2] : [10, -15, 5, -8, 12, -4];
       return {
         x: jitterX[index] || 0,
         y: jitterY[index] || 0,
         rotateZ: jitterRotates[index] || 0,
-        scale: 0.98
+        scale: isMobile ? 0.9 : 0.98
       };
     }
 
@@ -146,7 +169,7 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
       style={{
         position: 'relative',
         width: '100%',
-        padding: hideHeader ? '10px 20px 100px' : '80px 20px 140px',
+        padding: hideHeader ? (isMobile ? '10px 16px 50px' : '10px 20px 100px') : (isMobile ? '40px 16px 60px' : '80px 20px 140px'),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -159,7 +182,7 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
     >
       {/* Section Heading - hidden when hideHeader is true */}
       {!hideHeader && (
-        <div style={{ textAlign: 'center', marginBottom: '80px', maxWidth: '800px', zIndex: 10 }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px', maxWidth: '800px', zIndex: 10 }}>
           <span
             style={{
               fontSize: '12px',
@@ -197,126 +220,391 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
         </div>
       )}
 
-      {/* Cards Deck Stage */}
-      <div
-        style={{
-          position: 'relative',
-          width: '280px',
-          height: '320px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-      >
-        {modules.map((module, index) => {
-          const transform = getCardTransform(index, animationState);
+      {/* Cards Deck Stage (Desktop: Animated Stacked/Fanned Deck | Mobile: Swipeable Carousel) */}
+      {!isMobile ? (
+        <div
+          style={{
+            position: 'relative',
+            width: '280px',
+            height: '320px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          {modules.map((module, index) => {
+            const transform = getCardTransform(index, animationState);
 
-          return (
-            <motion.div
-              key={module.id}
-              animate={{
-                x: transform.x,
-                y: transform.y,
-                rotateZ: transform.rotateZ,
-                scale: transform.scale,
+            return (
+              <motion.div
+                key={module.id}
+                animate={{
+                  x: transform.x,
+                  y: transform.y,
+                  rotateZ: transform.rotateZ,
+                  scale: transform.scale,
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 140,
+                  damping: 18,
+                  mass: 0.8
+                }}
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '24px',
+                  background: module.color,
+                  boxShadow: '0 12px 32px rgba(15, 27, 45, 0.18)',
+                  border: hoveredCardId === module.id ? '2px solid #ffffff' : `2px solid ${module.color}`,
+                  padding: '32px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  zIndex: index,
+                  transformOrigin: 'center bottom',
+                  cursor: 'pointer',
+                  transition: 'border 0.3s ease'
+                }}
+                onClick={() => setSelectedModule(module)}
+                onHoverStart={() => setHoveredCardId(module.id)}
+                onHoverEnd={() => setHoveredCardId(null)}
+                whileHover={{
+                  scale: 1.1,
+                  zIndex: 50,
+                  y: transform.y - 15,
+                  boxShadow: '0 24px 64px rgba(0,0,0,0.4)'
+                }}
+              >
+                <div
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '16px',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                  }}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d={module.icon} />
+                  </svg>
+                </div>
+
+                <h3
+                  style={{
+                    fontSize: '20px',
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    margin: '0 0 12px',
+                    letterSpacing: '-0.02em'
+                  }}
+                >
+                  {module.title}
+                </h3>
+
+                <p
+                  style={{
+                    fontSize: '14px',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    lineHeight: 1.5,
+                    margin: 0
+                  }}
+                >
+                  {module.desc}
+                </p>
+
+                <div
+                  style={{
+                    marginTop: '16px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    color: 'rgba(255, 255, 255, 0.95)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: 'rgba(255, 255, 255, 0.18)',
+                    padding: '6px 12px',
+                    borderRadius: '999px',
+                  }}
+                >
+                  <span>Explore Details</span>
+                  <span>→</span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Mobile Swipeable Card Carousel / Slider with Dots */
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '320px',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
+          {/* Main Card Viewport */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '280px',
+              minHeight: '330px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {/* Left Nav Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrev();
               }}
-              transition={{
-                type: 'spring',
-                stiffness: 140,
-                damping: 18,
-                mass: 0.8
-              }}
+              aria-label="Previous capability"
               style={{
                 position: 'absolute',
-                width: '100%',
-                height: '100%',
-                borderRadius: '24px',
-                background: module.color,
-                boxShadow: '0 12px 32px rgba(15, 27, 45, 0.18)',
-                border: hoveredCardId === module.id ? '2px solid #ffffff' : `2px solid ${module.color}`,
-                padding: '32px 24px',
+                left: '-18px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 4px 14px rgba(15, 27, 45, 0.15)',
                 display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
                 alignItems: 'center',
-                textAlign: 'center',
-                zIndex: index,
-                transformOrigin: 'center bottom',
+                justifyContent: 'center',
                 cursor: 'pointer',
-                transition: 'border 0.3s ease'
-              }}
-              onClick={() => setSelectedModule(module)}
-              onHoverStart={() => setHoveredCardId(module.id)}
-              onHoverEnd={() => setHoveredCardId(null)}
-              whileHover={{
-                scale: 1.1,
-                zIndex: 50,
-                y: transform.y - 15,
-                boxShadow: '0 24px 64px rgba(0,0,0,0.4)'
+                zIndex: 20,
+                color: '#1e293b'
               }}
             >
-              <div
-                style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '16px',
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '20px'
-                }}
-              >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                  <path d={module.icon} />
-                </svg>
-              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
 
-              <h3
-                style={{
-                  fontSize: '20px',
-                  fontWeight: 700,
-                  color: '#ffffff',
-                  margin: '0 0 12px',
-                  letterSpacing: '-0.02em'
-                }}
-              >
-                {module.title}
-              </h3>
+            {/* Right Nav Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNext();
+              }}
+              aria-label="Next capability"
+              style={{
+                position: 'absolute',
+                right: '-18px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 4px 14px rgba(15, 27, 45, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 20,
+                color: '#1e293b'
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
 
-              <p
-                style={{
-                  fontSize: '14px',
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  lineHeight: 1.5,
-                  margin: 0
-                }}
-              >
-                {module.desc}
-              </p>
+            {/* Animated Active Card */}
+            <AnimatePresence mode="wait">
+              {(() => {
+                const currentModule = modules[mobileIndex];
+                return (
+                  <motion.div
+                    key={currentModule.id}
+                    initial={{ opacity: 0, x: slideDirection > 0 ? 40 : -40, scale: 0.94 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: slideDirection > 0 ? -40 : 40, scale: 0.94 }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 280,
+                      damping: 24,
+                      mass: 0.7
+                    }}
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragStart={() => {
+                      isDraggingRef.current = true;
+                    }}
+                    onDragEnd={(_, info) => {
+                      if (info.offset.x < -30) {
+                        handleNext();
+                      } else if (info.offset.x > 30) {
+                        handlePrev();
+                      }
+                      setTimeout(() => {
+                        isDraggingRef.current = false;
+                      }, 60);
+                    }}
+                    style={{
+                      width: '100%',
+                      minHeight: '320px',
+                      borderRadius: '24px',
+                      background: currentModule.color,
+                      boxShadow: `0 14px 34px ${currentModule.color}45, 0 4px 12px rgba(0,0,0,0.08)`,
+                      border: '2px solid rgba(255, 255, 255, 0.25)',
+                      padding: '30px 22px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      touchAction: 'pan-y'
+                    }}
+                    onClick={() => {
+                      if (!isDraggingRef.current) {
+                        setSelectedModule(currentModule);
+                      }
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '16px',
+                        background: 'rgba(255, 255, 255, 0.22)',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '18px'
+                      }}
+                    >
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                        <path d={currentModule.icon} />
+                      </svg>
+                    </div>
 
-              <div
+                    <h3
+                      style={{
+                        fontSize: '20px',
+                        fontWeight: 700,
+                        color: '#ffffff',
+                        margin: '0 0 10px',
+                        letterSpacing: '-0.02em'
+                      }}
+                    >
+                      {currentModule.title}
+                    </h3>
+
+                    <p
+                      style={{
+                        fontSize: '14px',
+                        color: 'rgba(255, 255, 255, 0.92)',
+                        lineHeight: 1.5,
+                        margin: '0 0 18px'
+                      }}
+                    >
+                      {currentModule.desc}
+                    </p>
+
+                    <div
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        color: '#ffffff',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: 'rgba(255, 255, 255, 0.25)',
+                        padding: '7px 14px',
+                        borderRadius: '999px',
+                        border: '1px solid rgba(255,255,255,0.3)'
+                      }}
+                    >
+                      <span>Explore Details</span>
+                      <span>→</span>
+                    </div>
+                  </motion.div>
+                );
+              })()}
+            </AnimatePresence>
+          </div>
+
+          {/* Swipe Hint & Counter */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              marginTop: '16px'
+            }}
+          >
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: 700,
+                color: '#334155',
+                letterSpacing: '0.04em'
+              }}
+            >
+              {mobileIndex + 1} of {modules.length}
+            </span>
+            <span style={{ fontSize: '11px', color: '#94a3b8' }}>• Swipe to explore</span>
+          </div>
+
+          {/* Dots Indicator */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '6px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '8px'
+            }}
+          >
+            {modules.map((m, i) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => {
+                  setSlideDirection(i > mobileIndex ? 1 : -1);
+                  setMobileIndex(i);
+                }}
+                aria-label={`Go to ${m.title}`}
                 style={{
-                  marginTop: '16px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: 'rgba(255, 255, 255, 0.95)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'rgba(255, 255, 255, 0.18)',
-                  padding: '6px 12px',
+                  width: i === mobileIndex ? '22px' : '7px',
+                  height: '7px',
                   borderRadius: '999px',
+                  background: i === mobileIndex ? m.color : '#cbd5e1',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
-              >
-                <span>Explore Details</span>
-                <span>→</span>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Module Modal */}
       <AnimatePresence>
@@ -338,6 +626,7 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
             onClick={() => setSelectedModule(null)}
           >
             <motion.div
+              className="module-modal-content"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}

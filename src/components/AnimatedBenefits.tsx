@@ -98,6 +98,9 @@ export const AnimatedBenefits: React.FC = () => {
     // Attempt initial play
     playVideo();
 
+    video.addEventListener('canplay', playVideo);
+    video.addEventListener('loadeddata', playVideo);
+
     // Trigger playback when Benefits section is visible in viewport
     const observer = new IntersectionObserver(
       (entries) => {
@@ -114,17 +117,19 @@ export const AnimatedBenefits: React.FC = () => {
       observer.observe(sectionRef.current);
     }
 
-    // User gesture fallback (browsers immediately permit muted playback on scroll/click)
+    // User gesture fallback (browsers permit muted playback on user interaction)
     const handleInteraction = () => {
       playVideo();
     };
 
-    window.addEventListener('scroll', handleInteraction, { passive: true, once: true });
-    window.addEventListener('click', handleInteraction, { once: true });
-    window.addEventListener('touchstart', handleInteraction, { passive: true, once: true });
+    window.addEventListener('scroll', handleInteraction, { passive: true });
+    window.addEventListener('click', handleInteraction, { passive: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
 
     return () => {
       observer.disconnect();
+      video.removeEventListener('canplay', playVideo);
+      video.removeEventListener('loadeddata', playVideo);
       window.removeEventListener('scroll', handleInteraction);
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
@@ -218,11 +223,19 @@ export const AnimatedBenefits: React.FC = () => {
           playsInline
           preload="auto"
           poster="/frame_1s.png"
+          onCanPlay={(e) => {
+            const v = e.currentTarget;
+            if (v && v.paused) v.play().catch(() => {});
+          }}
+          onLoadedData={(e) => {
+            const v = e.currentTarget;
+            if (v && v.paused) v.play().catch(() => {});
+          }}
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            objectPosition: 'bottom',
+            objectPosition: 'center 30%',
             opacity: 0.75,
             filter: 'grayscale(15%)'
           }}
@@ -287,6 +300,7 @@ export const AnimatedBenefits: React.FC = () => {
       {/* Interactive Pulse Dots (Idea 3) */}
       <div
         ref={dotsContainerRef}
+        className="benefits-desktop-dots"
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setActiveDotIndex(null)}
         style={{ width: '100%', height: '500px', position: 'relative', marginTop: '40px', zIndex: 20 }}
@@ -402,6 +416,19 @@ export const AnimatedBenefits: React.FC = () => {
             </motion.div>
           );
         })}
+      </div>
+
+      {/* Mobile-Only Accessible Cards View (Hidden on Desktop) */}
+      <div className="benefits-mobile-cards" style={{ display: 'none' }}>
+        {benefits.map((benefit, index) => (
+          <div key={index} className="benefit-mobile-card" style={{ border: `1px solid ${benefit.color}50` }}>
+            <div className="benefit-mobile-icon" style={{ color: benefit.color }}>
+              {benefit.icon}
+            </div>
+            <h4 className="benefit-mobile-title">{benefit.title}</h4>
+            <p className="benefit-mobile-desc">{benefit.description}</p>
+          </div>
+        ))}
       </div>
     </section>
   );

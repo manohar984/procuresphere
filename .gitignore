@@ -12,3 +12,5 @@ remove_bg.cjs
 replace_cinematic.*
 restore_header.cjs
 search*.cjs
+screenshots/
+scripts/
