@@ -431,9 +431,8 @@ const CinematicStats = () => {
   const rightContainerRef = useRef<HTMLDivElement>(null);
   const textWrapperRef = useRef<HTMLDivElement>(null);
 
-
-
-  // LERP state for buttery smooth scrolling even with mouse wheels
+  // Active card state for touch/mobile devices
+  const [activeCard, setActiveCard] = useState<number | null>(null);
   const targetP = useRef({ eP: 0, sP: 0 });
   const currentP = useRef({ eP: 0, sP: 0 });
 
@@ -706,9 +705,17 @@ const CinematicStats = () => {
 
               <div className="cinematic-cards-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }}>
                 <div className="stat-card-wrap-1">
-                  <div className="uiverse-card card-theme-1">
+                  <div
+                    className={`uiverse-card card-theme-1 ${activeCard === 1 ? 'is-active' : ''}`}
+                    onClick={() => setActiveCard(activeCard === 1 ? null : 1)}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <div className="logo"><Icon name="file" /></div>
                     <div className="title">Purchase & Approvals</div>
+                    <div className="card-tap-cue">
+                      <span>{activeCard === 1 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
+                    </div>
                     <div className="box box3"></div>
                     <div className="box box2"></div>
                     <div className="box box1">
@@ -720,9 +727,17 @@ const CinematicStats = () => {
                   </div>
                 </div>
                 <div className="stat-card-wrap-2">
-                  <div className="uiverse-card card-theme-2">
+                  <div
+                    className={`uiverse-card card-theme-2 ${activeCard === 2 ? 'is-active' : ''}`}
+                    onClick={() => setActiveCard(activeCard === 2 ? null : 2)}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <div className="logo"><Icon name="users" /></div>
                     <div className="title">Sourcing & Vendors</div>
+                    <div className="card-tap-cue">
+                      <span>{activeCard === 2 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
+                    </div>
                     <div className="box box3"></div>
                     <div className="box box2"></div>
                     <div className="box box1">
@@ -734,9 +749,17 @@ const CinematicStats = () => {
                   </div>
                 </div>
                 <div className="stat-card-wrap-3">
-                  <div className="uiverse-card card-theme-3">
+                  <div
+                    className={`uiverse-card card-theme-3 ${activeCard === 3 ? 'is-active' : ''}`}
+                    onClick={() => setActiveCard(activeCard === 3 ? null : 3)}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <div className="logo"><Icon name="finance" /></div>
                     <div className="title">Orders & Invoicing</div>
+                    <div className="card-tap-cue">
+                      <span>{activeCard === 3 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
+                    </div>
                     <div className="box box3"></div>
                     <div className="box box2"></div>
                     <div className="box box1">
@@ -748,9 +771,17 @@ const CinematicStats = () => {
                   </div>
                 </div>
                 <div className="stat-card-wrap-4">
-                  <div className="uiverse-card card-theme-4">
+                  <div
+                    className={`uiverse-card card-theme-4 ${activeCard === 4 ? 'is-active' : ''}`}
+                    onClick={() => setActiveCard(activeCard === 4 ? null : 4)}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <div className="logo"><Icon name="shield" /></div>
                     <div className="title">Contracts & Compliance</div>
+                    <div className="card-tap-cue">
+                      <span>{activeCard === 4 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
+                    </div>
                     <div className="box box3"></div>
                     <div className="box box2"></div>
                     <div className="box box1">
@@ -792,7 +823,7 @@ const CinematicStats = () => {
   );
 };
 
-const OverlayMenu = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+const OverlayMenu = ({ isOpen, onClose, onOpenLogin }: { isOpen: boolean, onClose: () => void, onOpenLogin?: () => void }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -942,6 +973,22 @@ const OverlayMenu = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
             </a>
           );
         })}
+        {onOpenLogin && (
+          <div className="overlay-menu-login-wrap">
+            <button
+              type="button"
+              className="overlay-menu-login-btn"
+              onClick={() => {
+                onClose();
+                onOpenLogin();
+              }}
+            >
+              <Icon name="shield" size={18} />
+              <span>Login to Portal</span>
+              <Icon name="arrow-down-right" size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1031,16 +1078,24 @@ const TrustCardsSequence = () => {
               <div
                 key={i}
                 className={`u-card ${isOpen ? 'force-open' : ''}`}
+                onClick={() => setToggledCards(prev => ({ ...prev, [i]: !isOpen }))}
                 onMouseEnter={() => setHoveredCard(i)}
                 onMouseLeave={() => setHoveredCard(null)}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isOpen}
                 style={{
                   border: `1px solid ${card.color}50`
                 }}
               >
-                <button className="mail" onClick={(e) => {
-                  e.stopPropagation();
-                  setToggledCards(prev => ({ ...prev, [i]: !isOpen }));
-                }}>
+                <button 
+                  className="mail" 
+                  aria-label={isOpen ? "Close card details" : "Open card details"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setToggledCards(prev => ({ ...prev, [i]: !isOpen }));
+                  }}
+                >
                   <Icon name="arrow-down-right" size={24} />
                 </button>
                 <div className="profile-pic" style={{ background: `${card.color}15`, color: card.color }}>
@@ -1049,7 +1104,8 @@ const TrustCardsSequence = () => {
 
                 {/* Base Title (Visible before hover) */}
                 <div className="u-card-base-title">
-                  {card.label}
+                  <span className="u-card-base-label">{card.label}</span>
+                  <span className="u-card-tap-cue">Tap for stats ↗</span>
                 </div>
 
                 <div className="bottom">
@@ -1057,6 +1113,7 @@ const TrustCardsSequence = () => {
                     <span className="name">{card.stat}</span>
                     <span className="label">{card.label}</span>
                     <span className="about-me">{card.desc}</span>
+                    <span className="u-card-close-cue">Tap to close ✕</span>
                   </div>
 
                 </div>
@@ -1237,7 +1294,7 @@ function App() {
         </div>
       </header>
 
-      <OverlayMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <OverlayMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} onOpenLogin={() => setLoginOpen(true)} />
 
       <main className="site-main relative">
         {/* Slide 1 & Slide 2 Presentation Deck */}

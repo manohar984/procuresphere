@@ -50,7 +50,7 @@ export const FullScreenLogin: React.FC<FullScreenLoginProps> = ({
   useEffect(() => {
     if (loginState === 'success' || loginState === 'failed') return;
 
-    if (isPasswordFocused && password.length > 0) {
+    if (isPasswordFocused || password.length > 0) {
       setLoginState('typing');
     } else {
       setLoginState('normal');
@@ -244,8 +244,14 @@ export const FullScreenLogin: React.FC<FullScreenLoginProps> = ({
               boxSizing: 'border-box',
             }}
           >
+            {/* Mobile Brand Pill (Only visible on mobile) */}
+            <div className="ps-mobile-brand-bar">
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--blue, #2858e8)' }} />
+              ProcureSphere 360 Portal
+            </div>
+
             {/* Top Brand & Copy Area */}
-            <div style={{ position: 'relative', zIndex: 5, marginBottom: '16px' }}>
+            <div className="ps-showcase-copy" style={{ position: 'relative', zIndex: 5, marginBottom: '16px' }}>
               <div
                 style={{
                   display: 'inline-flex',
@@ -364,7 +370,7 @@ export const FullScreenLogin: React.FC<FullScreenLoginProps> = ({
               }}
             >
               {/* Header / Brand */}
-              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <div className="ps-form-header" style={{ textAlign: 'center', marginBottom: '24px' }}>
                 <div
                   style={{
                     display: 'inline-flex',
@@ -423,6 +429,7 @@ export const FullScreenLogin: React.FC<FullScreenLoginProps> = ({
 
               {/* Fixed Alert Message Slot - Prevents Modal Resizing / Jumping */}
               <div
+                className="ps-alert-slot"
                 style={{
                   minHeight: '48px',
                   marginBottom: '14px',

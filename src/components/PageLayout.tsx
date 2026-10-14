@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { FullScreenLogin } from './FullScreenLogin';
 import { LegalModal } from './LegalModal';
 
-const OverlayMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+const OverlayMenu = ({ isOpen, onClose, onOpenLogin }: { isOpen: boolean; onClose: () => void; onOpenLogin?: () => void }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -120,6 +120,22 @@ const OverlayMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             </a>
           );
         })}
+        {onOpenLogin && (
+          <div className="overlay-menu-login-wrap">
+            <button
+              type="button"
+              className="overlay-menu-login-btn"
+              onClick={() => {
+                onClose();
+                onOpenLogin();
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Login to Portal</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7 7 10 10"/><path d="M17 7v10H7"/></svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -200,7 +216,7 @@ export const PageLayout: React.FC<{
       </header>
 
       {/* Identical Overlay Menu */}
-      <OverlayMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <OverlayMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} onOpenLogin={() => setLoginOpen(true)} />
 
       {/* Main Page Area */}
       <main className="site-main page-main" style={{ paddingTop: title ? '130px' : '90px', overflowX: 'hidden' }}>
