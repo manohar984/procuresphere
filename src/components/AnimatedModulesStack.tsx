@@ -66,18 +66,21 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
   const [selectedModule, setSelectedModule] = useState<typeof modules[0] | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const [mobileIndex, setMobileIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState(1);
   const isDraggingRef = React.useRef(false);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setWindowWidth(window.innerWidth);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const isMobile = windowWidth < 600;
+  const isTablet = windowWidth >= 600 && windowWidth <= 1280;
 
   const handleNext = () => {
     setSlideDirection(1);
@@ -116,22 +119,41 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
     const centerOffset = index - 2.5;
 
     if (state === 'fanned') {
-      const spacing = isMobile ? 36 : 160;
+      let spacing = 160;
+      let scale = 1;
+      let yMultiplier = 20;
+      let rotateMultiplier = 8;
+
+      if (isMobile) {
+        spacing = 36;
+        scale = 0.92;
+        yMultiplier = 8;
+        rotateMultiplier = 5;
+      } else if (isTablet) {
+        // Proportional tablet fit: keeps all 6 fanned cards 100% within tablet screen without side cutoff
+        const progress = Math.max(0, Math.min(1, (windowWidth - 600) / 680));
+        scale = 0.68 + progress * 0.26; // 0.68 at 600px up to 0.94 at 1280px
+        spacing = 68.0 + progress * 78.0; // 68px at 600px up to 146px at 1280px
+        yMultiplier = 12.0 + progress * 8.0;
+        rotateMultiplier = 5.5 + progress * 2.5;
+      }
+
       const x = centerOffset * spacing;
-      const y = Math.abs(centerOffset) * (isMobile ? 8 : 20);
-      const rotateZ = centerOffset * (isMobile ? 5 : 8);
-      return { x, y, rotateZ, scale: isMobile ? 0.92 : 1 };
+      const y = Math.abs(centerOffset) * yMultiplier;
+      const rotateZ = centerOffset * rotateMultiplier;
+      return { x, y, rotateZ, scale };
     }
 
     if (state === 'messy') {
       const jitterRotates = isMobile ? [-8, 6, -4, 8, -6, 10] : [-14, 8, -6, 12, -10, 16];
-      const jitterX = isMobile ? [-18, 14, -8, 16, -12, 18] : [-40, 25, -15, 30, -20, 35];
+      const jitterX = isMobile ? [-18, 14, -8, 16, -12, 18] : (isTablet ? [-28, 18, -12, 22, -16, 26] : [-40, 25, -15, 30, -20, 35]);
       const jitterY = isMobile ? [6, -8, 3, -4, 6, -2] : [10, -15, 5, -8, 12, -4];
+      const scale = isMobile ? 0.9 : (isTablet ? 0.82 : 0.98);
       return {
         x: jitterX[index] || 0,
         y: jitterY[index] || 0,
         rotateZ: jitterRotates[index] || 0,
-        scale: isMobile ? 0.9 : 0.98
+        scale
       };
     }
 
@@ -141,7 +163,7 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
       x: 0,
       y: stackedY,
       rotateZ: stackedRotates[index] || 0,
-      scale: 0.95
+      scale: isMobile ? 0.92 : (isTablet ? 0.85 : 0.95)
     };
   };
 
@@ -223,6 +245,7 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
       {/* Cards Deck Stage (Desktop: Animated Stacked/Fanned Deck | Mobile: Swipeable Carousel) */}
       {!isMobile ? (
         <div
+          className="modules-deck-stage"
           style={{
             position: 'relative',
             width: '280px',
@@ -273,9 +296,9 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
                 onHoverStart={() => setHoveredCardId(module.id)}
                 onHoverEnd={() => setHoveredCardId(null)}
                 whileHover={{
-                  scale: 1.1,
+                  scale: isTablet ? transform.scale * 1.06 : 1.1,
                   zIndex: 50,
-                  y: transform.y - 15,
+                  y: transform.y - 12,
                   boxShadow: '0 24px 64px rgba(0,0,0,0.4)'
                 }}
               >

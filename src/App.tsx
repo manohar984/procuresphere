@@ -1861,6 +1861,7 @@ import { BenefitsPage } from './pages/BenefitsPage';
 import { RolesPage } from './pages/RolesPage';
 import { ProcessPage } from './pages/ProcessPage';
 import { FAQPage } from './pages/FAQPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 export function HomePage() {
   return <App />;
@@ -1877,6 +1878,7 @@ export function RootApp() {
         <Route path="/process" element={<ProcessPage />} />
         <Route path="/roles" element={<RolesPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

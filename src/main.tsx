@@ -5,6 +5,7 @@ import './styles/tokens.css'
 import './styles/global.css'
 import './styles/uiverse.css'
 import './styles/responsive.css'
+import './styles/tablet.css'
 
 if (typeof window !== 'undefined') {
   if ('scrollRestoration' in window.history) {
