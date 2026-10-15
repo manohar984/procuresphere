@@ -940,7 +940,7 @@ const OverlayMenu = ({ isOpen, onClose, onOpenLogin }: { isOpen: boolean, onClos
     onClose();
     if (label === 'HOME' || href === '/') {
       if (window.location.pathname === '/') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
         const heroVid = document.querySelector('.hero-video') as HTMLVideoElement | null;
         if (heroVid) {
           heroVid.currentTime = 0;
@@ -948,9 +948,19 @@ const OverlayMenu = ({ isOpen, onClose, onOpenLogin }: { isOpen: boolean, onClos
         }
       } else {
         navigate('/', { state: { skipIntro: true } });
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
       }
     } else {
-      navigate(href);
+      if (window.location.pathname === href) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      } else {
+        navigate(href);
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }
     }
   };
 
@@ -1863,6 +1873,25 @@ import { ProcessPage } from './pages/ProcessPage';
 import { FAQPage } from './pages/FAQPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
+export function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const el = document.getElementById(hash.substring(1));
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [pathname, hash]);
+
+  return null;
+}
+
 export function HomePage() {
   return <App />;
 }
@@ -1870,6 +1899,7 @@ export function HomePage() {
 export function RootApp() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />

@@ -95,9 +95,23 @@ const OverlayMenu = ({ isOpen, onClose, onOpenLogin }: { isOpen: boolean; onClos
     e.preventDefault();
     onClose();
     if (label === 'HOME' || href === '/') {
-      navigate('/', { state: { skipIntro: true } });
+      if (window.location.pathname === '/') {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      } else {
+        navigate('/', { state: { skipIntro: true } });
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }
     } else {
-      navigate(href);
+      if (window.location.pathname === href) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      } else {
+        navigate(href);
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }
     }
   };
 
@@ -152,6 +166,12 @@ export const PageLayout: React.FC<{
   const [loginOpen, setLoginOpen] = useState(false);
   const [legalModal, setLegalModal] = useState<'privacy' | 'terms' | null>(null);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
+
   return (
     <div className="site-shell intro-finished" id="top" style={{ minHeight: '100vh', background: '#f8fafc', color: '#0f172a' }}>
       {/* Exact identical Header as Landing page */}
@@ -172,7 +192,14 @@ export const PageLayout: React.FC<{
               href="/"
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/', { state: { skipIntro: true } });
+                if (window.location.pathname === '/') {
+                  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                } else {
+                  navigate('/', { state: { skipIntro: true } });
+                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                  document.documentElement.scrollTop = 0;
+                  document.body.scrollTop = 0;
+                }
               }}
               aria-label="ProcureSphere 360 home"
             >

@@ -14,7 +14,8 @@
 .mobile-trust-tap-hint,
 .u-card-tap-cue,
 .u-card-close-cue,
-.ps-mobile-brand-bar {
+.ps-mobile-brand-bar,
+.overlay-menu-login-wrap {
   display: none !important;
 }
 
@@ -128,7 +129,8 @@
     font-size: 12.5px !important;
   }
 
-  .overlay-menu-login-wrap {
+  .overlay-menu-container.is-open .overlay-menu-login-wrap {
+    display: block !important;
     width: 100% !important;
     max-width: 320px !important;
     margin: 28px auto 0 auto !important;
