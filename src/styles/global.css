@@ -210,13 +210,6 @@ button { border: 0; cursor: pointer; }
 }
 
 /* Responsive adjustments */
-@media (max-width: 1200px) {
-  .hero { grid-template-columns: 1fr; gap: 32px; padding-top: 120px; width: 100%; padding-inline: 20px; }
-  .hero-copy { max-width: 680px; margin-inline: auto; padding-left: 0; margin-top: 0; text-align: center; }
-  .hero-visual { transform: none; left: 0; margin-top: 0; justify-content: center; }
-  .hero-video { width: 100%; max-width: 700px; }
-  .hero-stat { position: relative; bottom: auto; right: auto; margin-top: 16px; text-align: center; }
-}
 @media (max-width: 1024px) {
   .site-nav { padding: 0; }
   .nav-inner { padding: 0 20px; border-radius: 0; min-height: 70px; }

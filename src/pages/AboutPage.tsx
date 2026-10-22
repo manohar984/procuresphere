@@ -18,7 +18,7 @@ const aboutPillars = [
   {
     tag: 'END-TO-END TRACEABILITY',
     title: 'From Requisition to 3-Way Match',
-    desc: 'Every requisition, supplier bid, purchase order, inspection acceptance, and invoice is strictly tracked with immutable timestamps, states, and responsible approvers.',
+    desc: 'Every requisition, supplier bid, purchase order, inspection acceptance, and invoice is strictly tracked with timestamped logs, states, and responsible approvers.',
     icon: '⚡'
   }
 ];
@@ -44,7 +44,7 @@ const capabilities = [
   },
   {
     title: 'Contracts & Compliance',
-    desc: 'Centralized agreements, SLA obligations, immutable change histories, and automated renewal deadline alerts.',
+    desc: 'Centralized agreements, SLA obligations, version-controlled change histories, and automated renewal deadline alerts.',
     tag: 'LEGAL & CLM',
     color: '#8b5cf6'
   }

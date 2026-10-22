@@ -2,16 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const portraits = {
-  p1: '/portrait_man_sketch.jpg',
-  p2: '/portrait_woman_sketch.jpg',
-  p3: '/portrait_oldman_sketch.jpg',
+  p1: '/portrait_man_sketch.webp',
+  p2: '/portrait_woman_sketch.webp',
+  p3: '/portrait_oldman_sketch.webp',
 };
 
 const testimonials = [
   {
     id: 't1',
-    company: 'Apex Industries',
-    logo: 'Apex',
     quote: 'Procurement decisions become clearer when every request, supplier and approval is connected.',
     name: 'Arjun Mehta',
     role: 'Chief Procurement Officer',
@@ -24,8 +22,6 @@ const testimonials = [
   },
   {
     id: 't2',
-    company: 'Northstar Manufacturing',
-    logo: 'Northstar',
     quote: 'A connected procurement workflow gives our teams the visibility they need to move faster.',
     name: 'Priya Sharma',
     role: 'Head of Supply Chain',
@@ -38,8 +34,6 @@ const testimonials = [
   },
   {
     id: 't3',
-    company: 'Global Enterprises',
-    logo: 'Global',
     quote: 'We replaced six disconnected tools with one elegant operating picture. The clarity is unprecedented.',
     name: 'Robert Chen',
     role: 'VP of Finance',
@@ -104,12 +98,10 @@ export function EditorialTestimonials() {
                 transition={{ duration: 0.5, ease: 'easeOut' }}
                 className="editorial-text-content"
               >
-                <div className="editorial-logo">{active.logo}</div>
                 <h3 className="editorial-quote">"{active.quote}"</h3>
                 <div className="editorial-author">
                   <strong>{active.name}</strong>
                   <span>{active.role}</span>
-                  <span className="editorial-company">{active.company}</span>
                 </div>
               </motion.div>
             </AnimatePresence>

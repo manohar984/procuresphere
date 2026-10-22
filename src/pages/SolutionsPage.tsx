@@ -41,7 +41,7 @@ const s2pSteps: Step[] = [
       'Multi-line requisition with catalog & custom items',
       'Instant departmental budget check & lock',
       'Dynamic threshold routing (Manager -> Finance review)',
-      'Immutable submission timestamp & attachment auditing'
+      'Timestamped submission logging & attachment auditing'
     ],
     metrics: { label: 'Approval Speed', value: '4.2x Faster' },
     statusTag: 'BUDGET RESERVED'
@@ -379,10 +379,10 @@ export const SolutionsPage: React.FC = () => {
 
             <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '18px' }}>
               <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
-                System Verification Guarantee:
+                System Verification Controls:
               </div>
               <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6, margin: 0 }}>
-                Every action is verified server-side with zero silent overspend, strict boundary validation, and immutable audit logs.
+                Actions are evaluated server-side with budget threshold checking, boundary validation, and structured audit event logging.
               </p>
             </div>
           </div>

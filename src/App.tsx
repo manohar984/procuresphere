@@ -256,37 +256,72 @@ function ProcurementSphere({ scrollDepth = 0 }: { scrollDepth?: number }) {
 const IntroScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [shouldSlide, setShouldSlide] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     const video = videoRef.current;
-    if (video) {
-      video.onended = () => {
-        setShouldSlide(true);
-        setTimeout(onComplete, 800);
-      };
+    if (!video) return;
 
-      const onPlayFailed = () => {
-        setTimeout(() => {
-          setShouldSlide(true);
-          setTimeout(onComplete, 800);
-        }, 1000);
-      };
+    // Ensure DOM properties & attributes for reliable autoplay across browsers on every refresh
+    video.setAttribute('muted', '');
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
 
-      const timeout = setTimeout(() => {
-        if (!shouldSlide && video.currentTime === 0) {
-          setShouldSlide(true);
-          setTimeout(onComplete, 800);
+    const playVideo = () => {
+      if (video && !completedRef.current) {
+        const promise = video.play();
+        if (promise !== undefined) {
+          promise.catch(() => {});
         }
-      }, 5000);
+      }
+    };
 
-      video.addEventListener('error', onPlayFailed);
+    video.currentTime = 0;
+    playVideo();
 
-      return () => {
-        clearTimeout(timeout);
-        video.removeEventListener('error', onPlayFailed);
-      };
-    }
-  }, [onComplete, shouldSlide]);
+    const finishIntro = () => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      try {
+        video.pause();
+      } catch {}
+      setShouldSlide(true);
+      setTimeout(() => {
+        onCompleteRef.current();
+      }, 700);
+    };
+
+    video.onended = finishIntro;
+
+    const onPlayFailed = () => {
+      setTimeout(finishIntro, 500);
+    };
+    video.addEventListener('error', onPlayFailed);
+
+    const timeout = setTimeout(() => {
+      if (!completedRef.current && video.currentTime === 0) {
+        finishIntro();
+      }
+    }, 6000);
+
+    const handleUserGesture = () => {
+      if (!completedRef.current && video && video.paused) {
+        playVideo();
+      }
+    };
+    window.addEventListener('click', handleUserGesture, { once: true });
+    window.addEventListener('touchstart', handleUserGesture, { once: true, passive: true });
+
+    return () => {
+      clearTimeout(timeout);
+      video.removeEventListener('error', onPlayFailed);
+      window.removeEventListener('click', handleUserGesture);
+      window.removeEventListener('touchstart', handleUserGesture);
+    };
+  }, []);
 
   return (
     <div className={`intro-screen ${shouldSlide ? 'slide-up' : ''}`}>
@@ -296,6 +331,7 @@ const IntroScreen = ({ onComplete }: { onComplete: () => void }) => {
         autoPlay
         muted
         playsInline
+        preload="auto"
         className="intro-video"
       />
     </div>
@@ -475,7 +511,7 @@ const CinematicStats = () => {
       const isStatsActive = animationP >= 0.40;
 
       // Phase 2: Move Left (0.16 to 0.40)
-      // ZERO OVERLAP GUARANTEE: On reverse scroll up, image is LOCKED 100% on the left (moveLeftP = 1)
+      // ZERO OVERLAP: On reverse scroll up, image is LOCKED 100% on the left (moveLeftP = 1)
       // as long as cards/text are visible (isStatsActive).
       // The image can ONLY begin gliding to the center AFTER cards are 100% gone!
       const moveLeftP = isStatsActive ? 1 : Math.max(0, Math.min(1, (animationP - 0.16) / 0.24));
@@ -609,7 +645,7 @@ const CinematicStats = () => {
               boxShadow: 'none',
             }}>
               <img
-                src="/logistics_hero_9.jpg"
+                src="/logistics_hero_9.webp"
                 alt="ProcureSphere Logistics"
                 style={{
                   width: '100%',
@@ -787,7 +823,7 @@ const CinematicStats = () => {
                     <div className="box box1">
                       <div className="content">
                         <span className="box-title">Contracts & Compliance</span>
-                        <span className="box-text">Immutable audit trails, SLA milestones, and contract lifecycle management.</span>
+                        <span className="box-text">Structured audit trails, SLA milestones, and contract lifecycle management.</span>
                       </div>
                     </div>
                   </div>
@@ -1170,7 +1206,23 @@ const TrustCardsSequence = () => {
 
 function App() {
   const location = useLocation();
-  const skipIntro = Boolean(location.state && (location.state as any).skipIntro);
+
+  // Determine if this is a browser refresh/reload so intro video plays every time on refresh
+  const isReload = (() => {
+    try {
+      if (typeof window === 'undefined') return false;
+      const navEntries = performance.getEntriesByType('navigation');
+      if (navEntries.length > 0) {
+        return (navEntries[0] as PerformanceNavigationTiming).type === 'reload';
+      }
+      return (performance as any).navigation?.type === 1;
+    } catch {
+      return false;
+    }
+  })();
+
+  // Every time the page is refreshed, the intro video must play (do not skip on refresh)
+  const skipIntro = !isReload && Boolean(location.state && (location.state as any).skipIntro);
   const [introFinished, setIntroFinished] = useState(skipIntro)
   const [sequenceFinished, setSequenceFinished] = useState(skipIntro)
   const [scrolled, setScrolled] = useState(false)
@@ -1202,6 +1254,16 @@ function App() {
         window.history.scrollRestoration = 'manual';
       }
       window.scrollTo(0, 0);
+
+      // Clean up skipIntro state from history so any subsequent refresh also plays the intro video
+      if (window.history.state && (window.history.state as any).usr?.skipIntro) {
+        const cleanState = { ...window.history.state };
+        if (cleanState.usr) {
+          cleanState.usr = { ...cleanState.usr, skipIntro: false };
+        }
+        window.history.replaceState(cleanState, '', window.location.href);
+      }
+
       if (window.location.hash) {
         window.history.replaceState(null, '', window.location.pathname);
       }
@@ -1398,7 +1460,7 @@ function App() {
                   {Object.keys(roles).map((item) => {
                     const isActive = role === item;
                     const roleLower = item.toLowerCase();
-                    const imgSrc = `/roles/${roleLower}/${isActive ? 'active.png' : 'idle.png'}`;
+                    const imgSrc = `/roles/${roleLower}/${isActive ? 'active.webp' : 'idle.webp'}`;
                     
                     return (
                       <button 
@@ -1536,7 +1598,7 @@ function App() {
             
             <div style={{ marginTop: '-40px', maxWidth: '300px', display: 'flex', justifyContent: 'center' }}>
               <img 
-                src={`/roles/vendor/${submitted ? 'active.png' : 'idle.png'}`}
+                src={`/roles/vendor/${submitted ? 'active.webp' : 'idle.webp'}`}
                 alt="Vendor Status"
                 style={{
                   width: '100%',

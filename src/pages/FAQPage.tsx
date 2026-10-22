@@ -27,7 +27,7 @@ export const FAQPage: React.FC = () => {
     <PageLayout
       badge="FAQ"
       title="Frequently Asked Questions"
-      subtitle="Clear answers about how ProcureSphere 360 brings enterprise control, automated compliance, and complete financial clarity."
+      subtitle="Clear answers about how ProcureSphere 360 brings enterprise control, structured governance, and complete financial clarity."
     >
       <div style={{ maxWidth: '820px', margin: '0 auto' }}>
         <AnimatedFAQ />

@@ -14,3 +14,9 @@ restore_header.cjs
 search*.cjs
 screenshots/
 scripts/
+.DS_Store
+Thumbs.db
+.env
+.env.local
+.env.*.local
+

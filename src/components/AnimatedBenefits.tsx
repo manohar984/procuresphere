@@ -24,7 +24,7 @@ const benefits = [
     color: '#10b981' // Green
   },
   {
-    title: 'Automated Compliance',
+    title: 'Supplier Governance',
     description: 'Vendor onboarding, KYC, and risk management with built-in due-diligence. Keep supplier identity and performance in constant view.',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -61,8 +61,8 @@ const benefits = [
     color: '#ec4899' // Pink
   },
   {
-    title: 'Immutable Audit Trails',
-    description: 'Every critical action captures the actor, state change, and timestamp, providing uncompromised reporting for compliance teams.',
+    title: 'Traceable Audit Trails',
+    description: 'Every critical action captures the actor, state change, and timestamp, providing structured event reporting for audit readiness.',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -222,7 +222,7 @@ export const AnimatedBenefits: React.FC = () => {
           loop
           playsInline
           preload="auto"
-          poster="/frame_1s.png"
+          poster="/frame_1s.webp"
           onCanPlay={(e) => {
             const v = e.currentTarget;
             if (v && v.paused) v.play().catch(() => {});

@@ -12,7 +12,7 @@ const governanceTiers = [
     scope: 'Department Requisitions',
     responsibility: 'Create and track purchase requisitions for authorized departments within policy guidance and real-time budget visibility.',
     guardrail: 'Restricted view. Cannot view supplier bid comparisons or modify organizational approval thresholds.',
-    avatar: '/roles/requester/active.png'
+    avatar: '/roles/requester/active.webp'
   },
   {
     role: 'Procurement',
@@ -20,7 +20,7 @@ const governanceTiers = [
     scope: 'Sourcing & PO Execution',
     responsibility: 'Manage vendor relations, run competitive RFQ events, evaluate supplier bids, negotiate commercial terms, and issue purchase orders.',
     guardrail: 'Strict segregation. Cannot bypass budget thresholds or approve unbudgeted contracts unilaterally.',
-    avatar: '/roles/procurement/active.png'
+    avatar: '/roles/procurement/active.webp'
   },
   {
     role: 'Finance',
@@ -28,15 +28,15 @@ const governanceTiers = [
     scope: 'Budget & 3-Way Match',
     responsibility: 'Review departmental budgets, conduct invoice validation against PO and physical receipt, and resolve exception workflows.',
     guardrail: 'Automated lock. Invoices with unmatched quantities or unauthorized variance are blocked from payment.',
-    avatar: '/roles/finance/active.png'
+    avatar: '/roles/finance/active.webp'
   },
   {
     role: 'Legal',
     key: 'LEGAL',
     scope: 'Contracts & Obligations',
     responsibility: 'Oversee master agreements, track version histories, enforce terms, manage obligations, and monitor renewal deadlines.',
-    guardrail: 'Version locking. Past signed contracts are immutable; all changes require an explicit amendment trail.',
-    avatar: '/roles/legal/active.png'
+    guardrail: 'Version locking. Signed contract versions are locked; revisions require an explicit amendment trail.',
+    avatar: '/roles/legal/active.webp'
   },
   {
     role: 'Stores',
@@ -44,15 +44,15 @@ const governanceTiers = [
     scope: 'Receiving & Inspection',
     responsibility: 'Receive shipments, perform itemized quantity and quality inspections, log partial receipts, and record rejections.',
     guardrail: 'Inventory gate. Goods cannot enter payable status until inspection is logged.',
-    avatar: '/roles/stores/active.png'
+    avatar: '/roles/stores/active.webp'
   },
   {
     role: 'Vendor',
     key: 'VENDOR',
     scope: 'Restricted Supplier Portal',
     responsibility: 'Complete self-service onboarding, submit KYC documentation, participate in sealed RFPs, and acknowledge purchase orders.',
-    guardrail: 'Zero competitor access. Blind bidding guarantees complete data segregation between suppliers.',
-    avatar: '/roles/vendor/active.png'
+    guardrail: 'Zero competitor access. Blind bidding enforces data segregation between competing suppliers.',
+    avatar: '/roles/vendor/active.webp'
   }
 ];
 
@@ -82,7 +82,7 @@ export const RolesPage: React.FC = () => {
           {roleList.map((item) => {
             const isActive = activeRole === item;
             const roleLower = item.toLowerCase();
-            const imgSrc = `/roles/${roleLower}/${isActive ? 'active.png' : 'idle.png'}`;
+            const imgSrc = `/roles/${roleLower}/${isActive ? 'active.webp' : 'idle.webp'}`;
 
             return (
               <button

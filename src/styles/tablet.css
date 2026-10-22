@@ -2,11 +2,11 @@
    ProcureSphere 360 — Dedicated Tablet-Only Responsive Stylesheet
    STRICT PROTECTION RULE:
    - MOBILE (< 600px) IS 100% STRICTLY FROZEN AND UNTOUCHED.
-   - DESKTOP (> 1280px) IS 100% STRICTLY FROZEN AND UNTOUCHED.
-   Every rule is strictly encapsulated within tablet media queries (600px to 1280px).
+   - DESKTOP (> 1024px) IS 100% STRICTLY FROZEN AND UNTOUCHED.
+   Every rule is strictly encapsulated within tablet media queries (600px to 1024px).
    ========================================================================== */
 
-@media (min-width: 600px) and (max-width: 1280px) {
+@media (min-width: 600px) and (max-width: 1024px) {
 
   /* ------------------------------------------------------------------------
      1. Global Shell & Overflow

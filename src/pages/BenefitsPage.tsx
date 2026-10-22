@@ -24,8 +24,8 @@ const comparisonRows = [
   {
     dimension: 'Audit & Compliance',
     legacy: 'Painful retrospective audit sampling taking days of document gathering',
-    procuresphere: 'Immutable, cryptographically verifiable event log exportable with one click',
-    advantage: 'Full-Scope Audit Readiness'
+    procuresphere: 'Structured, timestamped event logging exportable with one click',
+    advantage: 'Comprehensive Audit Readiness'
   },
   {
     dimension: 'Contract Expirations',

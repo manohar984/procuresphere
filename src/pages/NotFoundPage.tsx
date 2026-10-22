@@ -51,7 +51,7 @@ export const NotFoundPage: React.FC = () => {
 
           {/* The Exact Pristine 16:9 Original 3D Illustration */}
           <img
-            src="/404-full.png"
+            src="/404-full.webp"
             alt="404 Page Not Found - Sleek 3D Illustration"
             className="notfound-exact-img"
           />

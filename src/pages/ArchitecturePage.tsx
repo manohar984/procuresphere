@@ -16,16 +16,16 @@ const techPillars = [
     highlights: ['Proactive contract renewal alerts', 'Scalable background queue', 'Instant UI response time']
   },
   {
-    tag: 'IMMUTABLE AUDITING',
+    tag: 'TRACEABLE AUDITING',
     title: 'Append-Only Audit Trails',
-    desc: 'Every approval, line-item edit, budget override, and status change is immutably logged with actor, timestamp, prior state, and resulting state.',
-    highlights: ['Non-repudiation guarantee', 'Complete version history', 'Exportable compliance reports']
+    desc: 'Every approval, line-item edit, budget override, and status change is recorded with actor, timestamp, prior state, and resulting state in an append-only log.',
+    highlights: ['Traceable audit trail', 'Complete version history', 'Exportable compliance reports']
   },
   {
-    tag: 'ZERO-TRUST SECURITY',
+    tag: 'ROLE-BASED GOVERNANCE',
     title: 'Server-Side Policy Engine',
     desc: 'Strict authorization rules evaluated entirely on the backend. No client-side bypasses or spoofed roles can alter procurement thresholds.',
-    highlights: ['Server-enforced limits', 'Encrypted data layers', 'CSRF & Injection protection']
+    highlights: ['Server-enforced limits', 'Data validation layers', 'Structured request routing']
   }
 ];
 
@@ -34,7 +34,7 @@ export const ArchitecturePage: React.FC = () => {
     <PageLayout
       badge="ENTERPRISE ENGINE"
       title="High-Integrity ERP Architecture"
-      subtitle="Engineered for institutional scale. Discover how ProcureSphere 360 balances real-time business speed with bulletproof compliance and data governance."
+      subtitle="Engineered for institutional scale. Discover how ProcureSphere 360 balances real-time business speed with structured compliance and data governance."
     >
       {/* 4 Architectural Pillars Grid */}
       <div

@@ -8,10 +8,10 @@ interface FullScreenLoginProps {
 }
 
 const CHARACTER_STATES = [
-  { id: 'normal', src: '/login-states/normal.png', alt: 'ProcureSphere Assistant Ready' },
-  { id: 'typing', src: '/login-states/password-typing.png', alt: 'ProcureSphere Assistant Eyes Covered' },
-  { id: 'failed', src: '/login-states/login-failed.png', alt: 'ProcureSphere Assistant Verification Issue' },
-  { id: 'success', src: '/login-states/login-success.png', alt: 'ProcureSphere Assistant Authenticated' },
+  { id: 'normal', src: '/login-states/normal.webp', alt: 'ProcureSphere Assistant Ready' },
+  { id: 'typing', src: '/login-states/password-typing.webp', alt: 'ProcureSphere Assistant Eyes Covered' },
+  { id: 'failed', src: '/login-states/login-failed.webp', alt: 'ProcureSphere Assistant Verification Issue' },
+  { id: 'success', src: '/login-states/login-success.webp', alt: 'ProcureSphere Assistant Authenticated' },
 ] as const;
 
 // Eagerly preload all character state images into the browser cache
