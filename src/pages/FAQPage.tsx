@@ -18,7 +18,7 @@ const extraFaqs = [
   },
   {
     q: "How does contract lifecycle management alert against renewal deadlines?",
-    a: "Our scheduled workflow monitors active agreements and triggers proactive notifications to legal and procurement teams at 90, 60, and 30-day thresholds before expiry."
+    a: "The system monitors active agreements, terms, and obligations, triggering proactive renewal notifications and milestone alerts to legal and procurement teams prior to expiry."
   }
 ];
 

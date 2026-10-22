@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FullScreenLogin } from './FullScreenLogin';
 import { LegalModal } from './LegalModal';
+import { Navbar } from './Navbar';
 
 const OverlayMenu = ({ isOpen, onClose, onOpenLogin }: { isOpen: boolean; onClose: () => void; onOpenLogin?: () => void }) => {
   const navigate = useNavigate();
@@ -167,6 +168,9 @@ export const PageLayout: React.FC<{
   const [legalModal, setLegalModal] = useState<'privacy' | 'terms' | null>(null);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__ps360_intro_completed = true;
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
@@ -175,72 +179,12 @@ export const PageLayout: React.FC<{
   return (
     <div className="site-shell intro-finished" id="top" style={{ minHeight: '100vh', background: '#f8fafc', color: '#0f172a' }}>
       {/* Exact identical Header as Landing page */}
-      <header className={`site-nav is-scrolled ${mobileOpen ? 'menu-open' : ''}`} style={{ zIndex: 100 }}>
-        <div className="nav-inner" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button className="sobha-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle Navigation">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
-              <span className="sobha-menu-text" style={{ letterSpacing: '1px' }}>{mobileOpen ? 'CLOSE' : 'MENU'}</span>
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <a
-              className="brand"
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                if (window.location.pathname === '/') {
-                  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-                } else {
-                  navigate('/', { state: { skipIntro: true } });
-                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                  document.documentElement.scrollTop = 0;
-                  document.body.scrollTop = 0;
-                }
-              }}
-              aria-label="ProcureSphere 360 home"
-            >
-              <span className="brand-mark" aria-hidden="true">
-                <svg viewBox="0 0 32 32">
-                  <circle cx="16" cy="16" r="12" />
-                  <ellipse cx="16" cy="16" rx="12" ry="5.5" />
-                  <path d="M4.5 16h23" />
-                  <path d="M16 4v24" />
-                  <circle cx="24.8" cy="11" r="2.1" />
-                  <circle cx="9.5" cy="21.5" r="2.1" />
-                </svg>
-              </span>
-              <span className="brand-text"><strong>ProcureSphere</strong><em>360</em></span>
-            </a>
-          </div>
-
-          <div className="nav-actions" style={{ justifyContent: 'flex-end', width: '100%' }}>
-            <button
-              className="sign-in"
-              type="button"
-              onClick={() => setLoginOpen(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                font: 'inherit',
-                padding: '8px 16px',
-              }}
-            >
-              Login
-            </button>
-            <a className="button button-primary" href="/#contact">
-              Request a Demo
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M5 12h13" /><path d="m13 6 6 6-6 6" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </header>
+      <Navbar
+        scrolled={true}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+        onOpenLogin={() => setLoginOpen(true)}
+      />
 
       {/* Identical Overlay Menu */}
       <OverlayMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} onOpenLogin={() => setLoginOpen(true)} />

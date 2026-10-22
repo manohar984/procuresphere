@@ -33,16 +33,17 @@
      2. Tablet Navigation Bar & Overlay Menu
      ------------------------------------------------------------------------ */
   .site-nav {
-    top: 10px !important;
-    width: calc(100% - 40px) !important;
-    max-width: 1100px !important;
-    margin: 0 auto !important;
-    border-radius: 999px !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
   }
 
   .nav-inner {
-    min-height: 58px !important;
-    padding: 0 18px !important;
+    min-height: 70px !important;
+    height: 70px !important;
+    padding: 0 20px !important;
     gap: 14px !important;
   }
 

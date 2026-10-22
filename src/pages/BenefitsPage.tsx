@@ -6,32 +6,32 @@ const comparisonRows = [
   {
     dimension: 'Spend Authorization',
     legacy: 'Manual spreadsheet tracking; overspend discovered weeks after commitment',
-    procuresphere: 'Instant pre-approval budget reservation; unauthorized commitments blocked at intake',
+    procuresphere: 'Pre-approval budget reservation distinguishing available, reserved, and actual spend to prevent silent overspend',
     advantage: 'Zero Silent Overspend'
   },
   {
     dimension: 'Supplier Sourcing',
     legacy: 'Uncontrolled email quote exchanges with fragmented pricing records',
-    procuresphere: 'Restricted blind bidding portal with sealed submissions until deadline close',
-    advantage: '18.2% Direct Spend Savings'
+    procuresphere: 'Restricted vendor portal with sealed bid submissions and weighted technical and commercial scoring',
+    advantage: 'Sealed Bidding & Objective Scoring'
   },
   {
     dimension: 'Invoice Processing',
     legacy: 'Manual 3-way matching on paper, prone to quantity and pricing discrepancies',
-    procuresphere: 'Automated line-item tolerance matching comparing PO, Receipt, and Invoice',
-    advantage: '92% Touchless Processing'
+    procuresphere: 'Automated 3-way matching comparing PO, receipt, and invoice with configurable tolerance rules',
+    advantage: 'Automated Tolerance Matching'
   },
   {
     dimension: 'Audit & Compliance',
     legacy: 'Painful retrospective audit sampling taking days of document gathering',
-    procuresphere: 'Structured, timestamped event logging exportable with one click',
+    procuresphere: 'Immutable audit logging capturing actor, state changes, and timestamps with instant audit export',
     advantage: 'Comprehensive Audit Readiness'
   },
   {
     dimension: 'Contract Expirations',
     legacy: 'Forgotten contracts autorenewing at unfavorable rates without review',
-    procuresphere: 'Proactive milestone reminders at 90, 60, and 30-day thresholds',
-    advantage: 'Zero Missed Renewals'
+    procuresphere: 'Proactive contract renewal alerts, milestone tracking, and vendor obligation governance',
+    advantage: 'Proactive Renewal Governance'
   }
 ];
 
@@ -99,36 +99,53 @@ export const BenefitsPage: React.FC = () => {
                   display: 'grid',
                   gridTemplateColumns: '1.2fr 1.6fr 1.8fr 1.2fr',
                   gap: '18px',
-                  padding: '28px 32px',
+                  padding: '24px 32px',
                   borderBottom: idx === comparisonRows.length - 1 ? 'none' : '2px solid #e2e8f0',
                   background: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
-                  alignItems: 'center',
+                  alignItems: 'start',
                 }}
               >
-                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '18px', lineHeight: 1.4 }}>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '17px', lineHeight: 1.55 }}>
                   {row.dimension}
                 </div>
-                <div style={{ color: '#334155', fontSize: '17px', lineHeight: 1.6, fontWeight: 500 }}>
-                  <span style={{ color: '#dc2626', marginRight: '8px', fontWeight: 800, fontSize: '18px' }}>✕</span>
-                  {row.legacy}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                  color: '#334155',
+                  fontSize: '15.5px',
+                  lineHeight: 1.55,
+                  fontWeight: 500
+                }}>
+                  <span style={{ color: '#dc2626', fontWeight: 800, fontSize: '17px', lineHeight: 1.55, flexShrink: 0, width: '16px', textAlign: 'center' }}>✕</span>
+                  <span style={{ flex: 1 }}>{row.legacy}</span>
                 </div>
-                <div style={{ color: '#0f172a', fontSize: '17px', fontWeight: 600, lineHeight: 1.6 }}>
-                  <span style={{ color: '#16a34a', marginRight: '8px', fontWeight: 800, fontSize: '18px' }}>✓</span>
-                  {row.procuresphere}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                  color: '#0f172a',
+                  fontSize: '15.5px',
+                  fontWeight: 650,
+                  lineHeight: 1.55
+                }}>
+                  <span style={{ color: '#16a34a', fontWeight: 800, fontSize: '17px', lineHeight: 1.55, flexShrink: 0, width: '16px', textAlign: 'center' }}>✓</span>
+                  <span style={{ flex: 1 }}>{row.procuresphere}</span>
                 </div>
-                <div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', paddingTop: '2px' }}>
                   <span
                     style={{
                       background: '#eff6ff',
                       color: '#1d4ed8',
                       border: '1px solid #bfdbfe',
                       fontWeight: 800,
-                      fontSize: '15px',
-                      padding: '8px 16px',
+                      fontSize: '13.5px',
+                      padding: '7px 14px',
                       borderRadius: '999px',
                       display: 'inline-block',
                       fontFamily: '"DM Mono", monospace',
-                      letterSpacing: '0.02em'
+                      letterSpacing: '0.02em',
+                      whiteSpace: 'nowrap'
                     }}
                   >
                     {row.advantage}

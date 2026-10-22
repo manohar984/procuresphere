@@ -52,7 +52,7 @@
   }
 
   .site-nav {
-    width: calc(100% - 32px) !important;
+    width: 100% !important;
   }
 
   .nav-inner {
@@ -66,13 +66,14 @@
 @media (max-width: 900px) {
   /* Navigation Bar */
   .site-nav {
-    top: 6px !important;
-    width: calc(100% - 20px) !important;
-    border-radius: 999px !important;
+    top: 0 !important;
+    width: 100% !important;
+    border-radius: 0 !important;
   }
 
   .nav-inner {
-    min-height: 54px !important;
+    min-height: 64px !important;
+    height: 64px !important;
     padding: 0 14px !important;
     gap: 8px !important;
   }
@@ -2010,13 +2011,15 @@
    -------------------------------------------------------------------------- */
 @media (max-width: 480px) {
   .site-nav {
-    width: calc(100% - 16px) !important;
-    top: 4px !important;
+    width: 100% !important;
+    top: 0 !important;
+    border-radius: 0 !important;
   }
 
   .nav-inner {
-    padding: 0 10px !important;
-    min-height: 50px !important;
+    padding: 0 12px !important;
+    min-height: 60px !important;
+    height: 60px !important;
   }
 
   .sobha-menu-btn {

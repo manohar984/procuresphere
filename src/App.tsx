@@ -1,4 +1,4 @@
-import { CSSProperties, FormEvent, ReactNode, useEffect, useState, useRef } from 'react'
+import { CSSProperties, FormEvent, ReactNode, useEffect, useState, useRef, Fragment } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { AnimatedModulesStack } from './components/AnimatedModulesStack'
 import { PremiumHeading } from './components/PremiumHeading'
@@ -9,6 +9,7 @@ import { GenericDashboard } from './components/GenericDashboard'
 import { AnimatedFAQ } from "./components/AnimatedFAQ";
 import { FullScreenLogin } from './components/FullScreenLogin';
 import { LegalModal } from './components/LegalModal';
+import { Navbar } from './components/Navbar';
 
 export type IconName = 'arrow' | 'arrow-down-right' | 'chevron' | 'check' | 'shield' | 'activity' | 'layers' | 'grid' | 'file' | 'users' | 'finance' | 'search' | 'menu' | 'close' | 'home' | 'home-solid' | 'info-solid' | 'box-solid' | 'star-solid' | 'users-solid' | 'question-solid' | 'key' | 'badge-solid' | 'chart-solid' | 'receipt-solid' | 'savings-solid'
 type IconProps = { name: IconName; size?: number }
@@ -227,7 +228,21 @@ function SobhaHeading({ text, delayOffset = 0, charStagger = 15, duration = 0.8,
 }
 
 function SectionTitle({ eyebrow, title, copy, align = 'left' }: { eyebrow: string; title: string; copy?: string; align?: 'left' | 'center' }) {
-  return <div className={`section-title align-${align}`}><Eyebrow centered={align === 'center'}>{eyebrow}</Eyebrow><h2 style={{ fontFamily: '"Playfair Display", "Georgia", serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600 }}><PremiumHeading text={title} /></h2>{copy && <p>{copy}</p>}</div>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className={`section-title align-${align}`}
+    >
+      <Eyebrow centered={align === 'center'}>{eyebrow}</Eyebrow>
+      <h2 style={{ fontFamily: '"Playfair Display", "Georgia", serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600 }}>
+        <PremiumHeading text={title} />
+      </h2>
+      {copy && <p>{copy}</p>}
+    </motion.div>
+  );
 }
 
 function ProcurementSphere({ scrollDepth = 0 }: { scrollDepth?: number }) {
@@ -461,398 +476,455 @@ const AnimatedNav = ({ mobileOpen, setMobileOpen }: { mobileOpen: boolean, setMo
   );
 };
 
+const platformModules = [
+  {
+    id: 1,
+    name: 'Purchase & Approvals',
+    themeColor: '#0052cc',
+    accentLight: '#00d2ff',
+    icon: 'file' as IconName,
+    summary: 'Streamline purchase requests with automated approval hierarchies and live budget verification.',
+    shortDesc: 'Automated requisition intake and multi-tier approval routing.',
+    points: [
+      {
+        title: 'Smart Purchase Requisitions',
+        desc: 'Dynamic forms automatically validate cost centers, project codes, and line-item requirements.',
+        icon: 'file' as IconName
+      },
+      {
+        title: 'Automated Approval Matrix',
+        desc: 'Intelligently routes requests to department heads and finance managers based on spend thresholds.',
+        icon: 'activity' as IconName
+      },
+      {
+        title: 'Real-Time Budget Validation',
+        desc: 'Verifies fund availability instantly before purchase commitments are locked, preventing overspend.',
+        icon: 'check' as IconName
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Sourcing & Vendors',
+    themeColor: '#6554c0',
+    accentLight: '#907cfc',
+    icon: 'users' as IconName,
+    summary: 'Centralize supplier management, request for quotations (RFQs), and competitive bid evaluation.',
+    shortDesc: 'Supplier onboarding, sealed RFQ bidding, and proposal scoring.',
+    points: [
+      {
+        title: 'Supplier Self-Service Portal',
+        desc: 'Vendors easily register, maintain profiles, upload documentation, and submit quote proposals.',
+        icon: 'users' as IconName
+      },
+      {
+        title: 'Structured RFQ & Sourcing Events',
+        desc: 'Publish requirement sheets to invited suppliers and collect comparable quotes within set deadlines.',
+        icon: 'search' as IconName
+      },
+      {
+        title: 'Comparative Proposal Evaluation',
+        desc: 'Evaluate commercial terms, technical ratings, and vendor delivery track records side-by-side.',
+        icon: 'check' as IconName
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Orders & Invoicing',
+    themeColor: '#172b4d',
+    accentLight: '#60a5fa',
+    icon: 'finance' as IconName,
+    summary: 'Dispatch official purchase orders and reconcile warehouse receiving notes against supplier invoices.',
+    shortDesc: 'PO dispatch, warehouse receiving, and touchless invoice matching.',
+    points: [
+      {
+        title: 'Purchase Order Execution',
+        desc: 'Converts approved requisitions into official POs dispatched directly to suppliers with version tracking.',
+        icon: 'finance' as IconName
+      },
+      {
+        title: 'Warehouse Goods Receipt (GRN)',
+        desc: 'Receiving docks record delivered items, inspect quality, and flag partial shipments accurately.',
+        icon: 'layers' as IconName
+      },
+      {
+        title: 'Automated 3-Way Match',
+        desc: 'Cross-verifies PO line items, receiving notes, and vendor invoices to prevent duplicate payments.',
+        icon: 'check' as IconName
+      }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Contracts & Compliance',
+    themeColor: '#ff5630',
+    accentLight: '#ff8f73',
+    icon: 'shield' as IconName,
+    summary: 'Maintain a centralized agreement repository with milestone deliverables and proactive renewal alerts.',
+    shortDesc: 'Centralized contract vault, SLA milestones, and renewal alerts.',
+    points: [
+      {
+        title: 'Centralized Contract Vault',
+        desc: 'Single secure repository for master service agreements, vendor rate sheets, and contractual terms.',
+        icon: 'shield' as IconName
+      },
+      {
+        title: 'Milestone & Obligation Tracking',
+        desc: 'Tracks key vendor deliverables against contract milestones and release schedules.',
+        icon: 'activity' as IconName
+      },
+      {
+        title: 'Proactive Renewal Notifications',
+        desc: 'Automated advance reminders prevent unexpected contract expirations and facilitate timely renegotiation.',
+        icon: 'check' as IconName
+      }
+    ]
+  }
+];
+
 const CinematicStats = () => {
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const imageWrapperRef = useRef<HTMLDivElement>(null);
-  const rightContainerRef = useRef<HTMLDivElement>(null);
-  const textWrapperRef = useRef<HTMLDivElement>(null);
-
-  // Active card state for touch/mobile devices
-  const [activeCard, setActiveCard] = useState<number | null>(null);
-  const targetP = useRef({ eP: 0, sP: 0 });
-  const currentP = useRef({ eP: 0, sP: 0 });
-
-  useEffect(() => {
-    // 1. Scroll listener only updates target values (no React state updates)
-    const handleScroll = () => {
-      if (stickyRef.current) {
-        const rect = stickyRef.current.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-
-        const eP = Math.max(0, Math.min(1, (viewportHeight - rect.top) / viewportHeight));
-
-        let sP = 0;
-        const stickyDistance = rect.height - viewportHeight;
-        if (stickyDistance > 0) {
-          sP = Math.max(0, Math.min(1, -rect.top / stickyDistance));
-        }
-
-        targetP.current = { eP, sP };
-      }
-    };
-
-    // 2. Continuous render loop to apply LERP and mutate DOM
-    let animationFrameId: number;
-    const renderLoop = () => {
-      // ULTRA SMOOTH PHYSICS (90+ FPS feel)
-      // Lower factor = heavier, more fluid cinematic camera.
-      // 0.03 absorbs absolutely all mouse wheel jumps.
-      const smoothFactor = 0.35;
-      currentP.current.eP += (targetP.current.eP - currentP.current.eP) * smoothFactor;
-      currentP.current.sP += (targetP.current.sP - currentP.current.sP) * smoothFactor;
-
-      const { sP } = currentP.current;
-      const animationP = sP;
-
-      // Phase 1: Grow and Center (0 to 0.16)
-      const growP = Math.max(0, Math.min(1, animationP / 0.16));
-
-      // Phase 3: Show Stats & Cards (activates cleanly when image is docked on the left)
-      const isStatsActive = animationP >= 0.40;
-
-      // Phase 2: Move Left (0.16 to 0.40)
-      // ZERO OVERLAP: On reverse scroll up, image is LOCKED 100% on the left (moveLeftP = 1)
-      // as long as cards/text are visible (isStatsActive).
-      // The image can ONLY begin gliding to the center AFTER cards are 100% gone!
-      const moveLeftP = isStatsActive ? 1 : Math.max(0, Math.min(1, (animationP - 0.16) / 0.24));
-
-      // Image grows from 0.5 to 1.0 during Phase 1
-      const scale = (0.5 + (0.5 * growP)).toFixed(3);
-
-      // Image starts at 55vh (giving more gap from the text) and moves up to 0vh during Phase 1
-      const imgTranslateY = 55 * (1 - growP);
-
-      // Moves left ONLY during Phase 2
-      const translateX = `calc((50vw - 50vh) * ${1 - moveLeftP})`;
-
-      // Text immediately starts moving UP and out of the screen (-60vh) during Phase 1
-      const textOpacity = (1 - growP).toFixed(3);
-      const textTranslateY = -60 * growP; // vh unit
-
-      if (textWrapperRef.current) {
-        textWrapperRef.current.style.opacity = textOpacity.toString();
-        textWrapperRef.current.style.transform = `translateY(${textTranslateY}vh)`;
-      }
-
-      // DOM MUTATION 1: Image Wrapper
-      if (imageWrapperRef.current) {
-        imageWrapperRef.current.style.transform = `translate3d(${translateX}, ${imgTranslateY}vh, 0) scale(${scale})`;
-        imageWrapperRef.current.style.boxShadow = moveLeftP > 0.5 ? '0 30px 60px rgba(0,0,0,0.15)' : 'none';
-      }
-
-      // DOM MUTATION 2: Stats Cards and Text (Solid 100% full opacity, instant on/off - no fractional blur or fading)
-      if (rightContainerRef.current) {
-        if (isStatsActive) {
-          rightContainerRef.current.style.opacity = '1';
-          rightContainerRef.current.style.visibility = 'visible';
-          rightContainerRef.current.style.pointerEvents = 'auto';
-        } else {
-          rightContainerRef.current.style.opacity = '0';
-          rightContainerRef.current.style.visibility = 'hidden';
-          rightContainerRef.current.style.pointerEvents = 'none';
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(renderLoop);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // init target
-    currentP.current = { ...targetP.current }; // snap immediately on load
-    renderLoop();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
+  const [activeModuleId, setActiveModuleId] = useState<number>(1);
+  const activeModule = platformModules.find(m => m.id === activeModuleId) || platformModules[0];
 
   return (
     <>
-      <div className="cinematic-wrapper" style={{ position: 'relative', background: 'var(--bg-base, #fefeff)' }}>
+      <div style={{ position: 'relative', background: '#ffffff', width: '100%' }}>
+      <section className="about-platform-section" style={{
+        position: 'relative',
+        padding: 'clamp(44px, 5.5vh, 68px) 0 clamp(44px, 5.5vh, 68px)',
+        maxWidth: '1440px',
+        margin: '0 auto',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}>
+        {/* Section Header: Clear, Bold, Enterprise Proportion */}
+        <div style={{
+          padding: '0 clamp(24px, 4vw, 56px)',
+          marginBottom: '22px'
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '5px 14px',
+            borderRadius: '999px',
+            background: '#eff6ff',
+            color: '#1d68f6',
+            border: '1px solid #dbeafe',
+            fontSize: '11.5px',
+            fontWeight: 750,
+            letterSpacing: '0.08em',
+            marginBottom: '10px',
+            textTransform: 'uppercase'
+          }}>
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#1d68f6' }} />
+            ABOUT PLATFORM
+          </div>
+          <h2 style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0 8px',
+            fontFamily: '"Playfair Display", "Georgia", serif',
+            fontSize: 'clamp(26px, 2.8vw, 38px)',
+            lineHeight: 1.2,
+            marginTop: 0,
+            marginBottom: '8px',
+            color: '#0F1B2D',
+            fontWeight: 700
+          }}>
+            Replacing chaos with a controlled{' '}
+            <span className="highlight-underline">
+              source-to-pay
+            </span>{' '}
+            workflow.
+          </h2>
+          <p style={{ fontSize: '15px', color: '#334155', lineHeight: 1.55, margin: 0, maxWidth: '780px', fontWeight: 500 }}>
+            ProcureSphere 360 eliminates disconnected emails, spreadsheets, and manual approvals, bringing total traceability to every transaction across your enterprise.
+          </p>
+        </div>
 
-        {/* STICKY SECTION - 360vh scroll space with generous hold time */}
-        <div ref={stickyRef} className="cinematic-sticky-parent" style={{ height: '360vh', position: 'relative' }}>
-          <div className="cinematic-sticky" style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', overflow: 'hidden', background: '#ffffff' }}>
+        {/* 2-Column Grid: Cards on Left, High-Contrast Details on Right */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1.15fr) minmax(380px, 0.95fr)',
+          gap: 'clamp(24px, 3vw, 40px)',
+          alignItems: 'stretch',
+          padding: '0 clamp(24px, 4vw, 56px)'
+        }}>
+          {/* LEFT COLUMN: 4 Interactive Cards (2x2 Grid) */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '12px',
+              fontSize: '13px',
+              color: '#475569',
+              fontWeight: 650
+            }}>
+              <span>Select or hover on any module below:</span>
+              <span style={{ color: activeModule.themeColor, fontWeight: 750 }}>
+                {activeModule.name} selected →
+              </span>
+            </div>
 
-            {/* TEXT LAYER (Now inside sticky container) */}
-            <div ref={textWrapperRef} className="cinematic-text-layer" style={{
-              position: 'absolute',
-              top: 0, left: 0, width: '100%',
+            <div className="cinematic-cards-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              {platformModules.map((module) => {
+                const isSelected = activeModuleId === module.id;
+                return (
+                  <div key={module.id} className={`stat-card-wrap-${module.id}`}>
+                    <div
+                      className={`uiverse-card card-theme-${module.id} ${isSelected ? 'is-active is-inspecting' : ''}`}
+                      onMouseEnter={() => setActiveModuleId(module.id)}
+                      onClick={() => setActiveModuleId(module.id)}
+                      role="button"
+                      tabIndex={0}
+                      style={{
+                        cursor: 'pointer',
+                        height: '178px',
+                        minHeight: '178px',
+                        borderRadius: '16px',
+                        outline: isSelected ? `3.5px solid ${module.accentLight}` : '1.5px solid rgba(15, 27, 45, 0.12)',
+                        outlineOffset: '2px',
+                        transform: isSelected ? 'scale(1.025)' : 'none',
+                        boxShadow: isSelected
+                          ? `0 22px 48px -8px ${module.themeColor}66, 0 8px 22px rgba(15, 27, 45, 0.22)`
+                          : '0 12px 30px -6px rgba(15, 27, 45, 0.24), 0 4px 14px rgba(15, 27, 45, 0.12)',
+                        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+                      }}
+                    >
+                      <div className="logo" style={{ top: '14px', left: '16px', width: '28px', height: '28px' }}>
+                        <Icon name={module.icon} size={22} />
+                      </div>
+                      <div className="title" style={{ fontSize: 'clamp(1.2rem, 1.35vw, 1.45rem)', top: '50%', fontWeight: 800 }}>
+                        {module.name}
+                      </div>
+                      <div className="card-tap-cue" style={{ position: 'absolute', bottom: '10px', width: '100%', textAlign: 'center' }}>
+                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.95)', fontWeight: isSelected ? 750 : 600 }}>
+                          {isSelected ? '● Viewing Details →' : 'Hover to view details ↗'}
+                        </span>
+                      </div>
+                      <div className="box box3"></div>
+                      <div className="box box2"></div>
+                      <div className="box box1">
+                        <div className="content" style={{ padding: '1rem' }}>
+                          <span className="box-title" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{module.name}</span>
+                          <span className="box-text" style={{ fontSize: '0.85rem', lineHeight: 1.4 }}>{module.shortDesc}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Meaningful Client-Facing Details Panel */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              minHeight: '372px',
+              borderRadius: '18px',
+              overflow: 'hidden',
+              background: '#ffffff',
+              border: '2px solid #94a3b8',
+              boxShadow: '0 24px 60px -12px rgba(15, 27, 45, 0.22), 0 8px 24px -4px rgba(15, 27, 45, 0.1)',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center',
-              paddingTop: '15vh',
-              zIndex: 2,
-              pointerEvents: 'none',
-              willChange: 'transform, opacity'
-            }}>
-              <div style={{ width: '90vw', margin: '0 auto', paddingBottom: '20px' }}>
-                <div style={{
+              boxSizing: 'border-box'
+            }}
+          >
+            {/* Top Accent Stripe matching active card */}
+            <div style={{
+              height: '5px',
+              width: '100%',
+              background: `linear-gradient(90deg, ${activeModule.themeColor}, ${activeModule.accentLight})`,
+              transition: 'background 0.3s ease'
+            }} />
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeModule.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  padding: '22px 26px',
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'center'
-                }}>
-
-                  <SobhaHeading
-                    text="A NEW ERA OF ENTERPRISE PROCUREMENT"
-                    delayOffset={0}
-                    style={{
-                      fontSize: '14px',
-                      fontWeight: 700,
-                      letterSpacing: '0.1em',
-                      color: 'var(--blue, #2456D6)',
-                      marginBottom: '24px',
-                    }}
-                  />
-
-                  <h2 style={{
-                    fontFamily: '"Playfair Display", "Georgia", serif',
-                    fontSize: 'clamp(36px, 5vw, 72px)',
-                    fontWeight: 600,
-                    lineHeight: 1.1,
-                    color: '#0F1B2D',
-                    margin: '0 0 24px 0',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                  }}>
-                    <SobhaHeading text="PROCUREMENT," delayOffset={100} />
-                    <SobhaHeading
-                      text="REIMAGINED."
-                      delayOffset={200}
-                      style={{ color: 'var(--blue, #2456D6)' }}
-                    />
-                  </h2>
-
-                </div>
-              </div>
-            </div>
-
-            {/* Image Layer (GPU Accelerated No-Crop Morph) */}
-            <div ref={imageWrapperRef} className="cinematic-image-layer" style={{
-              position: 'absolute',
-              left: '0',
-              top: '0vh',
-              width: '100vh',
-              height: '100vh',
-              transformOrigin: 'center top',
-              willChange: 'transform',
-              backfaceVisibility: 'hidden',
-              overflow: 'hidden',
-              zIndex: 1,
-              boxShadow: 'none',
-            }}>
-              <img
-                src="/logistics_hero_9.webp"
-                alt="ProcureSphere Logistics"
-                style={{
-                  width: '100%',
+                  justifyContent: 'space-between',
                   height: '100%',
-                  objectFit: 'cover',
-                  imageRendering: '-webkit-optimize-contrast'
+                  boxSizing: 'border-box'
                 }}
-              />
-
-              {/* Top Area: Premium 3-line Luxury Text */}
-              <div className="cinematic-poster-title" style={{
-                position: 'absolute',
-                top: '26%', /* Adjusted top gap based on feedback */
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '80%',
-                textAlign: 'center',
-              }}>
-                <div style={{
-                  fontSize: 'clamp(20px, 3vh, 32px)', /* Noticeably larger for a luxury statement */
-                  fontWeight: 600,
-                  fontFamily: '"Playfair Display", "Georgia", serif', /* Premium editorial serif */
-                  color: '#0a1629', /* Deep navy */
-                  lineHeight: 1.4,
-                  textShadow: '0 2px 15px rgba(255,255,255,0.9), 0 0 30px rgba(255,255,255,0.7)' /* Strong white glow for legibility */
-                }}>
-                  Elevating enterprise procurement <br />
-                  from a tactical function <br />
-                  to a strategic advantage.
-                </div>
-              </div>
-
-              {/* Bottom Description */}
-              <div className="cinematic-poster-desc" style={{
-                position: 'absolute',
-                bottom: '18%', /* Safely inside the bottom edge of the baked-in poster frame */
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '40%', /* Fits perfectly inside the frame */
-                textAlign: 'center',
-                color: '#0a1629', /* Deep premium navy */
-                fontFamily: '"Playfair Display", "Georgia", serif',
-                fontSize: 'clamp(11px, 1.45vh, 16px)',
-                lineHeight: 1.7,
-                fontWeight: 600,
-                letterSpacing: '0.01em',
-                textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8), 0 1px 2px rgba(255,255,255,1)'
-              }}>
-                Connecting every procurement decision into one seamless workflow. From intelligent sourcing and automated approvals to financial control, we bridge the gap between intent and execution.
-              </div>
-            </div>
-
-            {/* About Layer (Right Side) */}
-            <div ref={rightContainerRef} className="cinematic-right-layer" style={{
-              position: 'absolute',
-              left: `calc(50vh + 50vh * 1 + 4vw)`,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: `calc(100vw - (50vh + 50vh * 1 + 8vw))`,
-              maxWidth: '780px',
-              zIndex: 3,
-              pointerEvents: 'none',
-              opacity: 0,
-              visibility: 'hidden',
-              transition: 'none',
-            }}>
-              <div className="stat-title-wrap" style={{
-                marginBottom: 'clamp(16px, 2.2vh, 24px)'
-              }}>
-                <div className="eyebrow" style={{ marginBottom: '8px', marginLeft: '4px', fontSize: '15px', letterSpacing: '2px' }}>ABOUT PLATFORM</div>
-                <h2 style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0 8px',
-                  fontFamily: '"Playfair Display", "Georgia", serif',
-                  fontSize: 'clamp(24px, 2.6vw, 35px)',
-                  lineHeight: 1.12,
-                  marginTop: 0,
-                  marginBottom: '12px',
-                  color: '#0F1B2D',
-                  fontWeight: 600
-                }}>
-                  Replacing chaos with a controlled{' '}
-                  <span className="highlight-underline">
-                    source-to-pay
-                  </span>{' '}
-                  workflow.
-                </h2>
-                <p style={{ fontSize: 'clamp(14px, 1.15vw, 17px)', color: '#4b5563', lineHeight: 1.55, margin: 0 }}>
-                  ProcureSphere 360 eliminates disconnected emails, spreadsheets, and manual approvals, bringing total traceability to every transaction across your enterprise.
-                </p>
-              </div>
-
-              <div className="cinematic-cards-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }}>
-                <div className="stat-card-wrap-1">
-                  <div
-                    className={`uiverse-card card-theme-1 ${activeCard === 1 ? 'is-active' : ''}`}
-                    onClick={() => setActiveCard(activeCard === 1 ? null : 1)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="logo"><Icon name="file" /></div>
-                    <div className="title">Purchase & Approvals</div>
-                    <div className="card-tap-cue">
-                      <span>{activeCard === 1 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
-                    </div>
-                    <div className="box box3"></div>
-                    <div className="box box2"></div>
-                    <div className="box box1">
-                      <div className="content">
-                        <span className="box-title">Purchase & Approvals</span>
-                        <span className="box-text">Policy-driven requisition routing, budget checks, and multi-tier department approvals.</span>
+              >
+                <div>
+                  {/* Module Title & Icon Header */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '11px',
+                        background: `${activeModule.themeColor}18`,
+                        color: activeModule.themeColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <Icon name={activeModule.icon} size={24} />
                       </div>
+                      <h3 style={{
+                        margin: 0,
+                        fontSize: '25px',
+                        fontWeight: 800,
+                        fontFamily: '"Playfair Display", "Georgia", serif',
+                        color: '#0F1B2D',
+                        lineHeight: 1.2
+                      }}>
+                        {activeModule.name}
+                      </h3>
                     </div>
+
+                    <span style={{
+                      fontSize: '11.5px',
+                      fontWeight: 750,
+                      color: activeModule.themeColor,
+                      background: `${activeModule.themeColor}14`,
+                      padding: '5px 11px',
+                      borderRadius: '6px',
+                      fontFamily: '"DM Mono", monospace',
+                      letterSpacing: '0.04em'
+                    }}>
+                      ENTERPRISE CAPABILITY
+                    </span>
+                  </div>
+
+                  {/* High-Contrast Clear Summary */}
+                  <p style={{
+                    margin: '0 0 16px 0',
+                    fontSize: '16px',
+                    color: '#0F1B2D',
+                    lineHeight: 1.55,
+                    fontWeight: 600
+                  }}>
+                    {activeModule.summary}
+                  </p>
+
+                  {/* 3 High-Contrast Feature Rows */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
+                    {activeModule.points.map((pt, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '14px',
+                          padding: '12px 16px',
+                          borderRadius: '12px',
+                          background: '#f8fafc',
+                          border: '1.5px solid #cbd5e1',
+                          boxShadow: '0 4px 14px -2px rgba(15, 27, 45, 0.08), 0 2px 6px rgba(15, 27, 45, 0.04)'
+                        }}
+                      >
+                        <div style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          background: `${activeModule.themeColor}20`,
+                          color: activeModule.themeColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          marginTop: '2px'
+                        }}>
+                          <Icon name={pt.icon} size={16} />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '16.5px', fontWeight: 800, color: '#0a101d', lineHeight: 1.3 }}>
+                            {pt.title}
+                          </span>
+                          <span style={{ fontSize: '14.5px', color: '#1e293b', lineHeight: 1.5, marginTop: '3px', fontWeight: 500 }}>
+                            {pt.desc}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="stat-card-wrap-2">
-                  <div
-                    className={`uiverse-card card-theme-2 ${activeCard === 2 ? 'is-active' : ''}`}
-                    onClick={() => setActiveCard(activeCard === 2 ? null : 2)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="logo"><Icon name="users" /></div>
-                    <div className="title">Sourcing & Vendors</div>
-                    <div className="card-tap-cue">
-                      <span>{activeCard === 2 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
-                    </div>
-                    <div className="box box3"></div>
-                    <div className="box box2"></div>
-                    <div className="box box1">
-                      <div className="content">
-                        <span className="box-title">Sourcing & Vendors</span>
-                        <span className="box-text">Automated vendor onboarding, secure bid portals, and weighted technical evaluations.</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="stat-card-wrap-3">
-                  <div
-                    className={`uiverse-card card-theme-3 ${activeCard === 3 ? 'is-active' : ''}`}
-                    onClick={() => setActiveCard(activeCard === 3 ? null : 3)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="logo"><Icon name="finance" /></div>
-                    <div className="title">Orders & Invoicing</div>
-                    <div className="card-tap-cue">
-                      <span>{activeCard === 3 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
-                    </div>
-                    <div className="box box3"></div>
-                    <div className="box box2"></div>
-                    <div className="box box1">
-                      <div className="content">
-                        <span className="box-title">Orders & Invoicing</span>
-                        <span className="box-text">Seamless PO generation and 3-way matching across receipts and supplier invoices.</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="stat-card-wrap-4">
-                  <div
-                    className={`uiverse-card card-theme-4 ${activeCard === 4 ? 'is-active' : ''}`}
-                    onClick={() => setActiveCard(activeCard === 4 ? null : 4)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="logo"><Icon name="shield" /></div>
-                    <div className="title">Contracts & Compliance</div>
-                    <div className="card-tap-cue">
-                      <span>{activeCard === 4 ? 'Tap to close ✕' : 'Tap for details ↗'}</span>
-                    </div>
-                    <div className="box box3"></div>
-                    <div className="box box2"></div>
-                    <div className="box box1">
-                      <div className="content">
-                        <span className="box-title">Contracts & Compliance</span>
-                        <span className="box-text">Structured audit trails, SLA milestones, and contract lifecycle management.</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* End of About Layer */}
-          </div>
-          {/* End of cinematic-sticky */}
-        </div>
-        {/* End of 400vh scroll container */}
-      </div>
-      {/* End of cinematic-wrapper */}
-
-      <section className="trust-stats-section" style={{ paddingTop: '100px', paddingBottom: '0px' }}>
-        <div className="trust-stats-header">
-          <div>
-            <div className="eyebrow" style={{ marginBottom: '16px', marginLeft: '4px' }}>PROVEN AT SCALE</div>
-            <h2 style={{ fontFamily: '"Playfair Display", "Georgia", serif', fontSize: 'clamp(32px, 4vw, 44px)', lineHeight: 1.1, marginTop: 0, marginBottom: '20px', color: '#0F1B2D', fontWeight: 700 }}>
-              <PremiumHeading text="The Standard for Enterprises That Expect More" highlightWord="Enterprises" highlightClassName="highlight-underline" highlightStyle={{ color: '#0052cc' }} />
-            </h2>
-            <p style={{ fontSize: '22px', color: '#4b5563', lineHeight: 1.6, margin: 0 }}>
-              Delivering frictionless sourcing, automated billing, and seamless procurement for over 500+ global enterprises.
-            </p>
-          </div>
-          <div className="trust-animation-container">
-            <img src="/animation.webp" alt="ProcureSphere Animation" />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
+      </section>
+    </div>
+
+    {/* Elegant Section Transition Divider */}
+    <div style={{
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      background: '#ffffff'
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '1360px',
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, #cbd5e1 20%, #94a3b8 50%, #cbd5e1 80%, transparent 100%)'
+      }} />
+    </div>
+
+    <section className="trust-stats-section" style={{
+      position: 'relative',
+      paddingTop: 'clamp(64px, 7vh, 88px)',
+      paddingBottom: '0px',
+      background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 60%, #ffffff 100%)',
+      borderTop: '1px solid #e2e8f0'
+    }}>
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="trust-stats-header"
+      >
+        <div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '5px 14px',
+            borderRadius: '999px',
+            background: '#eff6ff',
+            color: '#1d68f6',
+            border: '1px solid #dbeafe',
+            fontSize: '11.5px',
+            fontWeight: 750,
+            letterSpacing: '0.08em',
+            marginBottom: '16px',
+            textTransform: 'uppercase'
+          }}>
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#1d68f6', boxShadow: '0 0 6px #1d68f6' }} />
+            PROVEN AT SCALE
+          </div>
+          <h2 style={{ fontFamily: '"Playfair Display", "Georgia", serif', fontSize: 'clamp(32px, 4vw, 44px)', lineHeight: 1.1, marginTop: 0, marginBottom: '20px', color: '#0F1B2D', fontWeight: 700 }}>
+            <PremiumHeading text="The Standard for Enterprises That Expect More" highlightWord="Enterprises" highlightClassName="highlight-underline" highlightStyle={{ color: '#0052cc' }} />
+          </h2>
+          <p style={{ fontSize: '20px', color: '#334155', lineHeight: 1.6, margin: 0, fontWeight: 450 }}>
+            Delivering frictionless sourcing, automated billing, and seamless procurement for over 500+ global enterprises.
+          </p>
+        </div>
+        <div className="trust-animation-container">
+          <img src="/animation.webp" alt="ProcureSphere Animation" />
+        </div>
+      </motion.div>
         <TrustCardsSequence />
       </section>
     </>
@@ -866,46 +938,19 @@ const OverlayMenu = ({ isOpen, onClose, onOpenLogin }: { isOpen: boolean, onClos
   const [activeItem, setActiveItem] = useState<string>('HOME');
 
   useEffect(() => {
-    const updateActive = () => {
-      const path = location.pathname.toLowerCase();
-      if (path.includes('/about')) {
-        setActiveItem('ABOUT');
-      } else if (path.includes('/solutions')) {
-        setActiveItem('SOLUTIONS');
-      } else if (path.includes('/benefits')) {
-        setActiveItem('BENEFITS');
-      } else if (path.includes('/process') || path.includes('/roles')) {
-        setActiveItem('PROCESS');
-      } else if (path.includes('/faq')) {
-        setActiveItem('FAQ');
-      } else {
-        // On Homepage ('/') - check in-page scroll sections
-        const vh = window.innerHeight || 800;
-        const threshold = vh * 0.45;
-
-        const faqEl = document.getElementById('faq');
-        const rolesEl = document.getElementById('roles');
-        const benefitsEl = document.getElementById('benefits');
-        const solutionEl = document.getElementById('solution');
-
-        if (faqEl && faqEl.getBoundingClientRect().top <= threshold) {
-          setActiveItem('FAQ');
-        } else if (rolesEl && rolesEl.getBoundingClientRect().top <= threshold) {
-          setActiveItem('PROCESS');
-        } else if (benefitsEl && benefitsEl.getBoundingClientRect().top <= threshold) {
-          setActiveItem('BENEFITS');
-        } else if (solutionEl && solutionEl.getBoundingClientRect().top <= threshold) {
-          setActiveItem('SOLUTIONS');
-        } else {
-          setActiveItem('HOME');
-        }
-      }
-    };
-
-    updateActive();
-    if (location.pathname === '/' || location.pathname === '') {
-      window.addEventListener('scroll', updateActive, { passive: true });
-      return () => window.removeEventListener('scroll', updateActive);
+    const path = location.pathname.toLowerCase();
+    if (path.includes('/about')) {
+      setActiveItem('ABOUT');
+    } else if (path.includes('/solutions')) {
+      setActiveItem('SOLUTIONS');
+    } else if (path.includes('/benefits')) {
+      setActiveItem('BENEFITS');
+    } else if (path.includes('/process') || path.includes('/roles')) {
+      setActiveItem('PROCESS');
+    } else if (path.includes('/faq')) {
+      setActiveItem('FAQ');
+    } else {
+      setActiveItem('HOME');
     }
   }, [location.pathname, isOpen]);
 
@@ -1107,14 +1152,17 @@ const TrustCardsSequence = () => {
         top: '0px',
         display: 'flex',
         flexDirection: 'column',
-        paddingTop: '90px',
-        paddingBottom: '70px',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        paddingTop: '60px',
+        paddingBottom: '80px',
         background: '#ffffff',
-        zIndex: 5
+        zIndex: 5,
+        boxSizing: 'border-box'
       }}>
 
         {/* CARDS GRID */}
-        <div className="trust-cards-grid" style={{ width: '100%', margin: '0 auto 100px auto', maxWidth: '1300px', padding: '0 20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+        <div className="trust-cards-grid" style={{ width: '100%', margin: '0 auto 80px auto', maxWidth: '1300px', padding: '0 20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
           {cardsData.map((card, i) => {
             // Force open if hovered, OR if reached in displayedStep
             const isAutoOpen = hoveredCard === i || i < displayedStep;
@@ -1169,100 +1217,291 @@ const TrustCardsSequence = () => {
         </div>
 
         {/* TRUSTED BRANDS INCLUDED IN STICKY */}
-        <div className="trusted-brands" style={{ marginTop: '0', position: 'relative' }}>
-          {/* Handshake Background Image */}
-          <div style={{ position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: -1, opacity: 0.3, width: '300px', height: '300px', backgroundImage: 'url(/handshake.gif)', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', pointerEvents: 'none' }}></div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="trusted-brands"
+          style={{ marginTop: '0', position: 'relative', paddingTop: '10px', paddingBottom: '20px' }}
+        >
+          {/* Handshake Background Image: positioned strictly behind brand pills without overlapping cards */}
+          <div style={{
+            position: 'absolute',
+            top: '55%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 0,
+            opacity: 0.20,
+            width: '280px',
+            height: '280px',
+            backgroundImage: 'url(/handshake.gif)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            pointerEvents: 'none'
+          }}></div>
 
-          <div className="trusted-label" style={{ justifyContent: 'flex-start' }}><span className="green-dot"></span> TRUSTED BY GLOBAL ENTERPRISES & PROCUREMENT TEAMS</div>
+          <div className="trusted-label" style={{ justifyContent: 'flex-start', position: 'relative', zIndex: 2 }}>
+            <span className="green-dot"></span> TRUSTED BY GLOBAL ENTERPRISES & PROCUREMENT TEAMS
+          </div>
 
-          <div className="brand-pills-wrapper">
+          <div className="brand-pills-wrapper" style={{ position: 'relative', zIndex: 2 }}>
             <div className="brand-pills-track">
               {/* Original Set */}
               <div className="brand-pills">
-                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="activity" size={16} /></div><div><strong>Apex Global</strong><span>Manufacturing</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-green"><Icon name="layers" size={16} /></div><div><strong>Nova Systems</strong><span>Technology</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-amber"><Icon name="grid" size={16} /></div><div><strong>Meridian</strong><span>Logistics</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-navy"><Icon name="shield" size={16} /></div><div><strong>Vanguard</strong><span>Financial</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="file" size={16} /></div><div><strong>Horizon</strong><span>Healthcare</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="activity" size={20} /></div><div><strong>Apex Global</strong><span>Manufacturing</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-green"><Icon name="layers" size={20} /></div><div><strong>Nova Systems</strong><span>Technology</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-amber"><Icon name="grid" size={20} /></div><div><strong>Meridian</strong><span>Logistics</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-navy"><Icon name="shield" size={20} /></div><div><strong>Vanguard</strong><span>Financial</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="file" size={20} /></div><div><strong>Horizon</strong><span>Healthcare</span></div></div>
               </div>
 
               {/* Duplicated Set for Infinite Loop */}
               <div className="brand-pills" aria-hidden="true">
-                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="activity" size={16} /></div><div><strong>Apex Global</strong><span>Manufacturing</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-green"><Icon name="layers" size={16} /></div><div><strong>Nova Systems</strong><span>Technology</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-amber"><Icon name="grid" size={16} /></div><div><strong>Meridian</strong><span>Logistics</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-navy"><Icon name="shield" size={16} /></div><div><strong>Vanguard</strong><span>Financial</span></div></div>
-                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="file" size={16} /></div><div><strong>Horizon</strong><span>Healthcare</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="activity" size={20} /></div><div><strong>Apex Global</strong><span>Manufacturing</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-green"><Icon name="layers" size={20} /></div><div><strong>Nova Systems</strong><span>Technology</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-amber"><Icon name="grid" size={20} /></div><div><strong>Meridian</strong><span>Logistics</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-navy"><Icon name="shield" size={20} /></div><div><strong>Vanguard</strong><span>Financial</span></div></div>
+                <div className="brand-pill"><div className="brand-logo bg-blue"><Icon name="file" size={20} /></div><div><strong>Horizon</strong><span>Healthcare</span></div></div>
               </div>
             </div>
           </div>
 
-        </div>
+        </motion.div>
 
       </div>
     </div>
   );
 };
 
+const comparisonRows = [
+  {
+    dimension: 'Spend Authorization',
+    legacy: 'Manual spreadsheet tracking; overspend discovered weeks after commitment',
+    procuresphere: 'Pre-approval budget reservation distinguishing available, reserved, and actual spend to prevent silent overspend',
+    advantage: 'Zero Silent Overspend'
+  },
+  {
+    dimension: 'Supplier Sourcing',
+    legacy: 'Uncontrolled email quote exchanges with fragmented pricing records',
+    procuresphere: 'Restricted vendor portal with sealed bid submissions and weighted technical and commercial scoring',
+    advantage: 'Sealed Bidding & Objective Scoring'
+  },
+  {
+    dimension: 'Invoice Processing',
+    legacy: 'Manual 3-way matching on paper, prone to quantity and pricing discrepancies',
+    procuresphere: 'Automated 3-way matching comparing PO, receipt, and invoice with configurable tolerance rules',
+    advantage: 'Automated Tolerance Matching'
+  },
+  {
+    dimension: 'Audit & Compliance',
+    legacy: 'Painful retrospective audit sampling taking days of document gathering',
+    procuresphere: 'Immutable audit logging capturing actor, state changes, and timestamps with instant audit export',
+    advantage: 'Comprehensive Audit Readiness'
+  },
+  {
+    dimension: 'Contract Expirations',
+    legacy: 'Forgotten contracts autorenewing at unfavorable rates without review',
+    procuresphere: 'Proactive contract renewal alerts, milestone tracking, and vendor obligation governance',
+    advantage: 'Proactive Renewal Governance'
+  }
+];
+
+const BenefitsComparison = () => {
+  return (
+    <section className="benefits-comparison-section" style={{
+      width: '100%',
+      background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)',
+      padding: 'clamp(70px, 8vh, 100px) 20px clamp(70px, 8vh, 100px)',
+      borderTop: '1px solid #e2e8f0',
+      boxSizing: 'border-box',
+      position: 'relative'
+    }}>
+      <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '44px' }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '5px 16px',
+            borderRadius: '999px',
+            background: '#eff6ff',
+            color: '#1d68f6',
+            border: '1px solid #dbeafe',
+            fontSize: '11.5px',
+            fontWeight: 750,
+            letterSpacing: '0.08em',
+            marginBottom: '14px',
+            textTransform: 'uppercase'
+          }}>
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#1d68f6', boxShadow: '0 0 6px #1d68f6' }} />
+            PROVEN ARCHITECTURAL DIFFERENCE
+          </div>
+
+          <h2 style={{
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontSize: 'clamp(30px, 3.8vw, 44px)',
+            color: '#0F1B2D',
+            fontWeight: 700,
+            margin: '0 0 14px 0',
+            lineHeight: 1.2
+          }}>
+            Legacy Procurement vs. ProcureSphere 360
+          </h2>
+          <p style={{
+            color: '#334155',
+            fontSize: '18px',
+            maxWidth: '780px',
+            margin: '0 auto',
+            lineHeight: 1.6,
+            fontWeight: 500
+          }}>
+            Why disconnected ERP modules and spreadsheet trackers fail modern global enterprises.
+          </p>
+        </div>
+
+        <div
+          className="benefits-table-wrapper"
+          style={{
+            background: '#ffffff',
+            border: '2px solid #cbd5e1',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 48px rgba(15, 27, 45, 0.12), 0 6px 16px rgba(15, 27, 45, 0.06)',
+          }}
+        >
+          <div className="benefits-table-card">
+            {/* Table Header */}
+            <div
+              className="benefits-table-head"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1.2fr 1.6fr 1.8fr 1.2fr',
+                gap: '18px',
+                padding: '22px 32px',
+                background: '#0F1B2D',
+                color: '#ffffff',
+                fontWeight: 800,
+                fontSize: '14.5px',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+              }}
+            >
+              <div>Process Domain</div>
+              <div>Traditional / Legacy Mode</div>
+              <div style={{ color: '#60a5fa' }}>ProcureSphere 360 Approach</div>
+              <div>Strategic Outcome</div>
+            </div>
+
+            {/* Table Rows */}
+            {comparisonRows.map((row, idx) => (
+              <div
+                key={row.dimension}
+                className="benefits-table-row"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.2fr 1.6fr 1.8fr 1.2fr',
+                  gap: '18px',
+                  padding: '24px 32px',
+                  borderBottom: idx === comparisonRows.length - 1 ? 'none' : '1.5px solid #e2e8f0',
+                  background: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
+                  alignItems: 'start',
+                }}
+              >
+                <div style={{ fontWeight: 800, color: '#0F1B2D', fontSize: '17px', lineHeight: 1.55 }}>
+                  {row.dimension}
+                </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                  color: '#475569',
+                  fontSize: '15.5px',
+                  lineHeight: 1.55,
+                  fontWeight: 500
+                }}>
+                  <span style={{ color: '#dc2626', fontWeight: 800, fontSize: '17px', lineHeight: 1.55, flexShrink: 0, width: '16px', textAlign: 'center' }}>✕</span>
+                  <span style={{ flex: 1 }}>{row.legacy}</span>
+                </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                  color: '#0F1B2D',
+                  fontSize: '15.5px',
+                  fontWeight: 650,
+                  lineHeight: 1.55
+                }}>
+                  <span style={{ color: '#16a34a', fontWeight: 800, fontSize: '17px', lineHeight: 1.55, flexShrink: 0, width: '16px', textAlign: 'center' }}>✓</span>
+                  <span style={{ flex: 1 }}>{row.procuresphere}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', paddingTop: '2px' }}>
+                  <span
+                    style={{
+                      background: '#eff6ff',
+                      color: '#1d4ed8',
+                      border: '1px solid #bfdbfe',
+                      fontWeight: 750,
+                      fontSize: '13.5px',
+                      padding: '7px 14px',
+                      borderRadius: '999px',
+                      display: 'inline-block',
+                      fontFamily: '"DM Mono", monospace',
+                      letterSpacing: '0.02em',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {row.advantage}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 function App() {
   const location = useLocation();
 
-  // Determine if this is a browser refresh/reload so intro video plays every time on refresh
-  const isReload = (() => {
-    try {
-      if (typeof window === 'undefined') return false;
-      const navEntries = performance.getEntriesByType('navigation');
-      if (navEntries.length > 0) {
-        return (navEntries[0] as PerformanceNavigationTiming).type === 'reload';
-      }
-      return (performance as any).navigation?.type === 1;
-    } catch {
-      return false;
-    }
-  })();
-
-  // Every time the page is refreshed, the intro video must play (do not skip on refresh)
-  const skipIntro = !isReload && Boolean(location.state && (location.state as any).skipIntro);
-  const [introFinished, setIntroFinished] = useState(skipIntro)
-  const [sequenceFinished, setSequenceFinished] = useState(skipIntro)
-  const [scrolled, setScrolled] = useState(false)
-  const [navbarHidden, setNavbarHidden] = useState(false)
-  const lastScrollY = useRef(0)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [role, setRole] = useState<RoleKey>('REQUESTER')
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const [submitted, setSubmitted] = useState(false)
-  const [formIsActive, setFormIsActive] = useState(false)
-  const [loginOpen, setLoginOpen] = useState(false)
-  const [legalModal, setLegalModal] = useState<'privacy' | 'terms' | null>(null)
-  const heroVideoRef = useRef<HTMLVideoElement>(null)
-  const roleScrollRef = useRef<HTMLDivElement>(null)
-  const [roleScrollProgress, setRoleScrollProgress] = useState(0)
+  // Intro video should ONLY play on actual browser refresh (F5/reload) or initial entry.
+  // In-app SPA navigation (clicking Home link, logo, navigating back from another page) must NEVER trigger the intro video.
+  const isInternalNavigation = typeof window !== 'undefined' && Boolean((window as any).__ps360_intro_completed);
+  const skipIntro = isInternalNavigation || Boolean(location.state && (location.state as any).skipIntro);
+  const [introFinished, setIntroFinished] = useState(skipIntro);
+  const [sequenceFinished, setSequenceFinished] = useState(skipIntro);
+  const [scrolled, setScrolled] = useState(false);
+  const [navbarHidden, setNavbarHidden] = useState(false);
+  const lastScrollY = useRef(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [role, setRole] = useState<RoleKey>('REQUESTER');
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const [formIsActive, setFormIsActive] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [legalModal, setLegalModal] = useState<'privacy' | 'terms' | null>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const roleScrollRef = useRef<HTMLDivElement>(null);
+  const [roleScrollProgress, setRoleScrollProgress] = useState(0);
   const handleRoleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     const maxScroll = target.scrollWidth - target.clientWidth;
     if (maxScroll > 0) {
       setRoleScrollProgress(target.scrollLeft / maxScroll);
     }
-  }
+  };
 
   // Ensure every refresh starts cleanly at Hero section with scroll position at top
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('ps360_intro_seen');
+      (window as any).__ps360_intro_completed = true;
       if ('scrollRestoration' in window.history) {
         window.history.scrollRestoration = 'manual';
       }
       window.scrollTo(0, 0);
-
-      // Clean up skipIntro state from history so any subsequent refresh also plays the intro video
-      if (window.history.state && (window.history.state as any).usr?.skipIntro) {
-        const cleanState = { ...window.history.state };
-        if (cleanState.usr) {
-          cleanState.usr = { ...cleanState.usr, skipIntro: false };
-        }
-        window.history.replaceState(cleanState, '', window.location.href);
-      }
 
       if (window.location.hash) {
         window.history.replaceState(null, '', window.location.pathname);
@@ -1271,6 +1510,9 @@ function App() {
   }, []);
 
   const handleIntroComplete = () => {
+    if (typeof window !== 'undefined') {
+      (window as any).__ps360_intro_completed = true;
+    }
     setIntroFinished(true);
     setSequenceFinished(true);
     window.scrollTo(0, 0);
@@ -1296,75 +1538,43 @@ function App() {
     return () => { document.body.style.overflow = ''; };
   }, [sequenceFinished]);
 
-  const [heroCovered, setHeroCovered] = useState(false)
-
   useEffect(() => {
     const onScroll = () => {
-      const currentScrollY = window.scrollY
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress(max > 0 ? (currentScrollY / max) * 100 : 0)
-      setScrolled(currentScrollY > 24)
-      setHeroCovered(currentScrollY > window.innerHeight * 1.05)
+      const currentScrollY = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(max > 0 ? (currentScrollY / max) * 100 : 0);
+      setScrolled(currentScrollY > 24);
 
       if (currentScrollY > lastScrollY.current && currentScrollY > 10) {
-        setNavbarHidden(true)
+        setNavbarHidden(true);
       } else {
-        setNavbarHidden(false)
+        setNavbarHidden(false);
       }
-      lastScrollY.current = currentScrollY
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+      lastScrollY.current = currentScrollY;
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setSubmitted(true)
-  }
+    event.preventDefault();
+    setSubmitted(true);
+  };
 
-  const roleTitle = role === 'REQUESTER' ? 'My Requests' : role === 'PROCUREMENT' ? 'Procurement overview' : role === 'FINANCE' ? 'Financial control' : role === 'LEGAL' ? 'Contract obligations' : role === 'STORES' ? 'Receiving workspace' : role === 'VENDOR' ? 'Vendor workspace' : 'Compliance overview'
+  const roleTitle = role === 'REQUESTER' ? 'My Requests' : role === 'PROCUREMENT' ? 'Procurement overview' : role === 'FINANCE' ? 'Financial control' : role === 'LEGAL' ? 'Contract obligations' : role === 'STORES' ? 'Receiving workspace' : role === 'VENDOR' ? 'Vendor workspace' : 'Compliance overview';
 
   return <>
     {!introFinished && <IntroScreen onComplete={handleIntroComplete} />}
     <div className={`site-shell ${introFinished ? 'intro-finished' : ''} ${!sequenceFinished ? 'sequence-running' : ''}`} id="top">
       <div className="scroll-progress" style={{ width: `${scrollProgress}%` }} />
-      <header
-        className={`site-nav ${scrolled ? 'is-scrolled' : ''} ${mobileOpen ? 'menu-open' : ''} ${navbarHidden ? 'nav-hidden' : ''}`}
-        style={{ zIndex: 100 }}
-      >
-        <div className="nav-inner" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', width: '100%' }}>
-
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button className="sobha-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
-              <Icon name="menu" size={24} />
-              <span className="sobha-menu-text" style={{ letterSpacing: '1px' }}>{mobileOpen ? 'CLOSE' : 'MENU'}</span>
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Logo />
-          </div>
-
-          <div className="nav-actions" style={{ justifyContent: 'flex-end', width: '100%' }}>
-            <button
-              className="sign-in"
-              type="button"
-              onClick={() => setLoginOpen(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                font: 'inherit',
-                padding: '8px 16px',
-              }}
-            >
-              Login
-            </button>
-            <Button href="#contact">Request a Demo</Button>
-          </div>
-        </div>
-      </header>
+      <Navbar
+        scrolled={scrolled}
+        navbarHidden={navbarHidden}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+        onOpenLogin={() => setLoginOpen(true)}
+      />
 
       <OverlayMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} onOpenLogin={() => setLoginOpen(true)} />
 
@@ -1373,12 +1583,8 @@ function App() {
         <div className="slides-deck">
           {/* Slide 1: Hero */}
           <section
-            className="hero section-pad slide-hero sticky top-0"
+            className="hero section-pad slide-hero"
             aria-labelledby="hero-heading"
-            style={{
-              visibility: heroCovered ? 'hidden' : 'visible',
-              pointerEvents: heroCovered ? 'none' : 'auto'
-            }}
           >
             <div className="hero-copy">
               <h1 id="hero-heading" className="hero-title"><span style={{ color: 'inherit', whiteSpace: 'nowrap' }}>The Intelligent</span><br />Enterprise<br />Procurement<br /><span>Platform</span></h1>
@@ -1443,6 +1649,9 @@ function App() {
 
         {/* Section 4: Benefits - Animated Dark Section */}
         <AnimatedBenefits />
+
+        {/* Benefits Comparison - Proven Architectural Difference */}
+        <BenefitsComparison />
 
         {/* Section 6: Roles - Normal Scroll */}
         <section className={`roles section-pad role-${role.toLowerCase()}`} id="roles">
@@ -1588,7 +1797,13 @@ function App() {
 
         {/* Section 9: Contact - Normal Scroll */}
         <section className="contact section-pad" id="contact">
-          <div className="contact-copy">
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="contact-copy"
+          >
             <div className="section-title align-left">
               <Eyebrow centered={false}>CONTACT / RFP</Eyebrow>
               <h2 style={{ fontFamily: '"Playfair Display", "Georgia", serif', fontSize: 'clamp(20px, 2.5vw, 28px)', fontWeight: 600 }}>
@@ -1612,7 +1827,7 @@ function App() {
                 }}
               />
             </div>
-          </div>
+          </motion.div>
           <AnimatePresence mode="wait">
             {!submitted ? (
               <motion.form 

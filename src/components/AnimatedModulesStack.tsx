@@ -204,7 +204,13 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
     >
       {/* Section Heading - hidden when hideHeader is true */}
       {!hideHeader && (
-        <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px', maxWidth: '800px', zIndex: 10 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px', maxWidth: '800px', zIndex: 10 }}
+        >
           <span
             style={{
               fontSize: '12px',
@@ -239,12 +245,16 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
           <p style={{ fontSize: '17px', color: '#64748b', lineHeight: 1.6, margin: '0 auto', maxWidth: '640px' }}>
             A modular, unified system replacing isolated tools. Click on any module to explore its workflow, controls, and features.
           </p>
-        </div>
+        </motion.div>
       )}
 
       {/* Cards Deck Stage (Desktop: Animated Stacked/Fanned Deck | Mobile: Swipeable Carousel) */}
       {!isMobile ? (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="modules-deck-stage"
           style={{
             position: 'relative',
@@ -363,7 +373,7 @@ export const AnimatedModulesStack: React.FC<{ hideHeader?: boolean }> = ({ hideH
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       ) : (
         /* Mobile Swipeable Card Carousel / Slider with Dots */
         <div
